@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { HelmetProvider } from "react-helmet-async";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
+const LegalPage = lazy(() => import("./pages/LegalPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -34,6 +35,9 @@ const App = () => (
             >
               <Routes>
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/privacidad" element={<LegalPage />} />
+                <Route path="/cookies" element={<LegalPage />} />
+                <Route path="/aviso-legal" element={<LegalPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
