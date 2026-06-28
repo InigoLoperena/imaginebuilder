@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /empleados
+Disallow: /sistemainterno
+
+Sitemap: https://greenhunt.net/sitemap.xml
