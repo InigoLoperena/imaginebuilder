@@ -1,28 +1,24 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import imagineLogo from "@/assets/imagine-logo.png.asset.json";
 
-const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <Link to="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </Link>
-      </div>
-    </div>
-  );
-};
+const NotFound = () => (
+  <main className="min-h-screen gradient-hero flex flex-col items-center justify-center px-6 text-center">
+    <img src={imagineLogo.url} alt="Imagine" className="h-14 w-auto mb-10" />
+    <p className="text-cyan-accent uppercase tracking-[0.4em] text-xs mb-6">
+      Página no encontrada
+    </p>
+    <h1 className="font-display text-5xl md:text-7xl mb-6">404</h1>
+    <p className="text-muted-foreground text-lg max-w-md mb-10">
+      Esta página todavía no existe. Quizá esté esperando a que alguien la{" "}
+      <span className="font-script text-cyan-accent text-xl">imagine</span>.
+    </p>
+    <Link
+      to="/"
+      className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition"
+    >
+      Volver al inicio
+    </Link>
+  </main>
+);
 
 export default NotFound;
