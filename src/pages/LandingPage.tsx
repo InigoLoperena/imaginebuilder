@@ -1,28 +1,15 @@
+import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo.png.asset.json";
 import {
   Lightbulb,
   Users,
-  PieChart,
   Vote,
-  FlaskConical,
   Sparkles,
   Globe2,
   Clock,
   Languages,
   DollarSign,
 } from "lucide-react";
-
-const RubikCube = () => (
-  <div className="grid grid-cols-3 gap-1 w-24 h-24 p-1 rounded-lg bg-navy-deep">
-    {[
-      "bg-red-500", "bg-yellow-400", "bg-blue-500",
-      "bg-orange-500", "bg-white", "bg-green-500",
-      "bg-blue-500", "bg-red-500", "bg-yellow-400",
-    ].map((c, i) => (
-      <div key={i} className={`${c} rounded-sm`} />
-    ))}
-  </div>
-);
 
 const Section = ({
   id,
@@ -70,6 +57,85 @@ const FeatureCard = ({
   </div>
 );
 
+// Floating orbital illustration in brand colors
+const FloatingOrbits = () => (
+  <div className="relative w-full max-w-md mx-auto aspect-square" aria-hidden="true">
+    <div className="absolute inset-0 rounded-full border border-cyan-accent/20 animate-[spin_30s_linear_infinite]">
+      <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[hsl(var(--rubik-red))] shadow-[0_0_30px_hsl(var(--rubik-red)/0.6)]" />
+      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 rounded-full bg-[hsl(var(--rubik-yellow))] shadow-[0_0_30px_hsl(var(--rubik-yellow)/0.6)]" />
+    </div>
+    <div className="absolute inset-8 rounded-full border border-cyan-accent/30 animate-[spin_18s_linear_infinite_reverse]">
+      <span className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[hsl(var(--rubik-green))] shadow-[0_0_25px_hsl(var(--rubik-green)/0.6)]" />
+      <span className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[hsl(var(--rubik-blue))] shadow-[0_0_25px_hsl(var(--rubik-blue)/0.6)]" />
+    </div>
+    <div className="absolute inset-20 rounded-full border border-cyan-accent/40 animate-[spin_10s_linear_infinite]">
+      <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[hsl(var(--rubik-orange))] shadow-[0_0_20px_hsl(var(--rubik-orange)/0.7)]" />
+    </div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-full bg-cyan-accent/20 backdrop-blur-sm flex items-center justify-center">
+        <Sparkles className="w-7 h-7 text-cyan-accent" />
+      </div>
+    </div>
+  </div>
+);
+
+// 6-segment colored donut chart
+const SixSlicePie = () => {
+  const slices = [
+    { color: "hsl(var(--rubik-red))", label: "Investigación" },
+    { color: "hsl(var(--rubik-yellow))", label: "Diseño" },
+    { color: "hsl(var(--rubik-green))", label: "Desarrollo" },
+    { color: "hsl(var(--rubik-blue))", label: "Validación" },
+    { color: "hsl(var(--rubik-orange))", label: "Crecimiento" },
+    { color: "hsl(var(--primary))", label: "Comunidad" },
+  ];
+  const segment = 100 / slices.length;
+  const circumference = 2 * Math.PI * 40;
+  const segLen = (segment / 100) * circumference;
+  const gap = circumference - segLen;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-72 h-72">
+        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+          {slices.map((s, i) => (
+            <circle
+              key={i}
+              cx="50"
+              cy="50"
+              r="40"
+              fill="transparent"
+              stroke={s.color}
+              strokeWidth="20"
+              strokeDasharray={`${segLen} ${gap}`}
+              strokeDashoffset={-i * segLen}
+            />
+          ))}
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <p className="font-script text-cyan-accent text-3xl leading-none">imagine</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1">
+              propiedad
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-2 w-full max-w-sm">
+        {slices.map((s, i) => (
+          <div key={i} className="flex items-center gap-2 text-sm">
+            <span
+              className="w-3 h-3 rounded-sm shrink-0"
+              style={{ backgroundColor: s.color }}
+            />
+            <span className="text-foreground/90">{s.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const LandingPage = () => {
   return (
     <main className="min-h-screen text-foreground">
@@ -79,7 +145,7 @@ const LandingPage = () => {
           <img
             src={imagineLogo.url}
             alt="Imagine"
-            className="h-10 md:h-12 w-auto"
+            className="h-12 md:h-14 w-auto"
           />
           <div className="hidden md:flex gap-8 text-sm uppercase tracking-widest text-muted-foreground">
             <a href="#tesis" className="hover:text-cyan-accent transition">Tesis</a>
@@ -90,13 +156,8 @@ const LandingPage = () => {
           </div>
         </nav>
 
-        <div className="max-w-6xl mx-auto px-6 pt-16 pb-32 md:pt-24 md:pb-40">
+        <div className="max-w-6xl mx-auto px-6 pt-12 pb-32 md:pt-20 md:pb-40 grid md:grid-cols-[1.4fr_1fr] gap-12 items-center">
           <div className="animate-fade-up">
-            <img
-              src={imagineLogo.url}
-              alt="Imagine — Venture Builder Cooperativo"
-              className="w-full max-w-2xl mb-10"
-            />
             <p className="text-cyan-accent uppercase tracking-[0.4em] text-sm md:text-base font-medium mb-8">
               Venture Builder Cooperativo
             </p>
@@ -112,6 +173,7 @@ const LandingPage = () => {
               </footer>
             </blockquote>
           </div>
+          <FloatingOrbits />
         </div>
       </header>
 
@@ -163,7 +225,7 @@ const LandingPage = () => {
 
       {/* SLICING PIE */}
       <Section id="slicing-pie" eyebrow="Modelo Slicing Pie" title="Propiedad compartida proporcional al aporte real.">
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-5 max-w-xl">
             <p>
               Las personas y empresas que participan en los proyectos aportan{" "}
@@ -181,53 +243,7 @@ const LandingPage = () => {
               que regula el acuerdo entre todos los participantes.
             </p>
           </div>
-
-          {/* Pie chart visual */}
-          <div className="flex flex-col items-center">
-            <div className="relative w-72 h-72">
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                {/* 20% slice */}
-                <circle
-                  cx="50" cy="50" r="40"
-                  fill="transparent"
-                  stroke="hsl(var(--accent))"
-                  strokeWidth="20"
-                  strokeDasharray="50.27 251.33"
-                />
-                {/* 80% slice */}
-                <circle
-                  cx="50" cy="50" r="40"
-                  fill="transparent"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth="20"
-                  strokeDasharray="201.06 251.33"
-                  strokeDashoffset="-50.27"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <PieChart className="w-10 h-10 text-foreground/40" />
-              </div>
-            </div>
-
-            <div className="mt-8 space-y-3 w-full max-w-sm">
-              <div className="flex items-start gap-3">
-                <span className="w-4 h-4 mt-1 rounded-sm bg-[hsl(var(--accent))] shrink-0" />
-                <p className="text-base">
-                  <span className="text-foreground font-semibold">20% — Idea aprobada.</span>{" "}
-                  Pertenece al miembro que propuso la idea y cuya propuesta fue
-                  aprobada por los miembros del venture builder.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="w-4 h-4 mt-1 rounded-sm bg-[hsl(var(--primary))] shrink-0" />
-                <p className="text-base">
-                  <span className="text-foreground font-semibold">80% — Ejecución.</span>{" "}
-                  Se reparte entre los miembros en función de las horas de trabajo
-                  aportadas u otro tipo de contribuciones acordadas.
-                </p>
-              </div>
-            </div>
-          </div>
+          <SixSlicePie />
         </div>
       </Section>
 
@@ -326,27 +342,32 @@ const LandingPage = () => {
             </li>
           ))}
         </ol>
-
-        <div className="mt-16 card-glow rounded-2xl p-8 bg-card/60 flex items-start gap-5">
-          <FlaskConical className="w-8 h-8 text-cyan-accent shrink-0 mt-1" />
-          <p className="text-foreground text-lg">
-            Cada experimento es barato, rápido y diseñado para producir aprendizaje
-            —no para confirmar lo que ya creíamos.
-          </p>
-        </div>
       </Section>
 
       {/* FOOTER */}
       <footer className="border-t border-border/60 bg-navy-deep">
-        <div className="max-w-6xl mx-auto px-6 py-14 flex flex-col md:flex-row items-center justify-between gap-6">
-          <img src={imagineLogo.url} alt="Imagine" className="h-10 w-auto" />
-          <p className="text-muted-foreground text-sm text-center md:text-right">
-            Imagine — Venture Builder Cooperativo.
-            <br />
-            <span className="font-script text-cyan-accent text-base">
-              Imagination is more important than knowledge.
-            </span>
-          </p>
+        <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-8 items-start">
+          <div>
+            <p className="font-script text-cyan-accent text-2xl">imagine</p>
+            <p className="text-muted-foreground text-sm mt-2 max-w-xs">
+              Venture Builder Cooperativo. Construimos juntos, sin la presión del
+              dinero.
+            </p>
+          </div>
+          <div className="md:text-center">
+            <p className="uppercase tracking-widest text-xs text-cyan-accent mb-3">
+              Legal
+            </p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/privacidad" className="hover:text-cyan-accent transition">Política de privacidad</Link></li>
+              <li><Link to="/cookies" className="hover:text-cyan-accent transition">Política de cookies</Link></li>
+              <li><Link to="/aviso-legal" className="hover:text-cyan-accent transition">Aviso legal</Link></li>
+            </ul>
+          </div>
+          <div className="md:text-right text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Imagine.
+            <br />Todos los derechos reservados.
+          </div>
         </div>
       </footer>
     </main>
