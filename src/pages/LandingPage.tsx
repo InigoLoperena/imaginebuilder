@@ -211,7 +211,7 @@ const LandingPage = () => {
             </FeatureCard>
             <FeatureCard icon={Languages} title="Inglés a nivel nativo" color="text-[hsl(var(--rubik-blue))]">
               El país hispanohablante con mejor dominio del inglés, listo para
-              construir contenido y soporte para mercados globales.
+              construir contenido y comunicaciones para mercados globales.
             </FeatureCard>
             <FeatureCard icon={Clock} title="Misma zona horaria que USA" color="text-[hsl(var(--rubik-yellow))]">
               Colaboración en tiempo real con clientes, usuarios y partners
