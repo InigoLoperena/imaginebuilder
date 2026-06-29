@@ -85,8 +85,8 @@ const SixSlicePie = () => {
     { color: "hsl(var(--rubik-red))", label: "Investigación" },
     { color: "hsl(var(--rubik-yellow))", label: "Diseño" },
     { color: "hsl(var(--rubik-green))", label: "Desarrollo" },
-    { color: "hsl(var(--rubik-blue))", label: "Validación" },
-    { color: "hsl(var(--rubik-orange))", label: "Crecimiento" },
+    { color: "hsl(var(--rubik-blue))", label: "Contenido" },
+    { color: "hsl(var(--rubik-orange))", label: "Growth" },
     { color: "hsl(var(--primary))", label: "Comunidad" },
   ];
   const segment = 100 / slices.length;
@@ -163,8 +163,8 @@ const LandingPage = () => {
             </p>
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl leading-[1.05] max-w-4xl mb-10">
               Construimos productos digitales{" "}
-              <span className="font-script text-cyan-accent">imaginando</span>{" "}
-              juntos, sin la presión del dinero.
+              <span className="font-script text-cyan-accent">imaginando y colaborando</span>{" "}
+              juntos, alineando intereses, sin la presión del dinero.
             </h1>
             <blockquote className="border-l-2 border-cyan-accent/60 pl-5 italic text-lg md:text-xl text-muted-foreground max-w-2xl">
               "Imagination is more important than knowledge"
@@ -178,7 +178,7 @@ const LandingPage = () => {
       </header>
 
       {/* TESIS */}
-      <Section id="tesis" eyebrow="Tesis" title="El nuevo contexto de la innovación en software">
+      <Section id="tesis" eyebrow="TESIS" title="El nuevo contexto de la innovación en software">
         <p className="max-w-3xl">
           Los costes de la construcción de software se han derrumbado. Lo importante
           ahora en el mundo de la innovación no es escribir código: es{" "}
@@ -198,9 +198,7 @@ const LandingPage = () => {
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight">
             Equipo en Argentina, productos para el mundo.
           </h2>
-          <p className="text-lg text-muted-foreground mb-14 max-w-3xl">
-            La combinación ideal para lanzar productos en USA y globalmente.
-          </p>
+          <p className="text-lg text-muted-foreground mb-14 max-w-3xl">{"\n"}</p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             <FeatureCard icon={Sparkles} title="Creatividad argentina">
@@ -217,20 +215,20 @@ const LandingPage = () => {
             </FeatureCard>
             <FeatureCard icon={Clock} title="Misma zona horaria que USA" color="text-[hsl(var(--rubik-yellow))]">
               Colaboración en tiempo real con clientes, usuarios y partners
-              norteamericanos, sin desfases.
+              norteamericanos
             </FeatureCard>
           </div>
         </div>
       </section>
 
       {/* SLICING PIE */}
-      <Section id="slicing-pie" eyebrow="Modelo Slicing Pie" title="Propiedad compartida proporcional al aporte real.">
+      <Section id="slicing-pie" eyebrow="Modelo Slicing Pie" title="Propiedad compartida a cambio de trabajo u otros recursos estratégicos">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-5 max-w-xl">
             <p>
               Las personas y empresas que participan en los proyectos aportan{" "}
               <span className="text-foreground font-medium">trabajo</span> u otros
-              recursos estratégicos a cambio de{" "}
+              recursos estratégicos como software o comunidades en redes sociales a cambio de{" "}
               <span className="text-foreground font-medium">propiedad</span> sobre
               los proyectos. Esto nos permite construir sin la presión del dinero
               y crear cosas que de otra forma no serían viables.
@@ -288,40 +286,38 @@ const LandingPage = () => {
       <Section
         id="sistema"
         eyebrow="Sistema de diseño y validación"
-        title="Cómo investigamos, validamos y construimos cada hipótesis."
+        title="Cómo investigamos, validamos y construimos"
       >
         <p className="mb-12 max-w-3xl">
-          Hemos diseñado un sistema para investigar usuarios alrededor de ideas y
-          problemas, validar hipótesis mediante entrevistas, llamadas y promoción
-          de landings y MVPs.
+          Hemos diseñado un sistema para investigar  problemas y proponer soluciones rápida y eficientemente
         </p>
 
         <ol className="space-y-6">
           {[
             {
               n: "01",
-              title: "Identificar dónde están",
-              text: "Instagram, LinkedIn, Google Maps, websites, apps… Encontramos a los usuarios potenciales donde ya pasan tiempo.",
+              title: "Identificar dónde están las empresas o personas con el problema ",
+              text: "Instagram, LinkedIn, Google Maps, websites, apps… ",
             },
             {
               n: "02",
               title: "Extraer data para conversar",
-              text: "Obtenemos teléfonos y emails para contactar y entender mejor sus problemas, motivaciones y contexto.",
+              text: "Obtenemos teléfonos y emails con Apollo, scrap.io, influencers.club  o otras  para contactarles y entender mejor sus problemas, motivaciones y contexto.",
             },
             {
               n: "03",
-              title: "Construir un MVP con vibe coding",
-              text: "Levantamos un MVP muy rápido planteando una sola hipótesis clara que queremos poner a prueba.",
+              title: "Construir una landing o MVP con vibe coding",
+              text: "Levantamos un MVP muy rápido planteando una hipótesis clara que queremos poner a prueba",
             },
             {
               n: "04",
               title: "Presentar la propuesta de valor",
-              text: "Con el data extraído lanzamos emails, llamadas en frío y anuncios en redes muy segmentados para validar interés real.",
+              text: "Con el mismo data extraído lanzamos emails, llamadas en frío y anuncios en redes muy segmentados para validar interés",
             },
             {
               n: "05",
               title: "Analizar e iterar",
-              text: "Estudiamos data del MVP, interacciones y campañas para extraer insights y decidir si la hipótesis se valida —y por qué.",
+              text: "Estudiamos data del MVP, interacciones y campañas para extraer insights y decidir si la hipótesis se valida — y por qué.",
             },
           ].map((step) => (
             <li
