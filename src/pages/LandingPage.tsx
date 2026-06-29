@@ -356,22 +356,12 @@ const LandingPage = () => {
 
       {/* FOOTER */}
       <footer className="border-t border-border/60 bg-navy-deep">
-        <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-2 md:grid-cols-5 gap-8 items-start">
+        <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-2 md:grid-cols-4 gap-8 items-start">
           <div className="col-span-2 md:col-span-1">
             <p className="font-script text-cyan-accent text-2xl">imagine</p>
             <p className="text-muted-foreground text-sm mt-2">
               Venture Builder Cooperativo.
             </p>
-          </div>
-          <div>
-            <p className="uppercase tracking-widest text-xs text-cyan-accent mb-3">
-              Proyecto
-            </p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="/#tesis" className="hover:text-cyan-accent transition">Tesis</a></li>
-              <li><a href="/#sistema" className="hover:text-cyan-accent transition">Sistema</a></li>
-              <li><a href="/#gobernanza" className="hover:text-cyan-accent transition">Gobernanza</a></li>
-            </ul>
           </div>
           <div>
             <p className="uppercase tracking-widest text-xs text-cyan-accent mb-3">
