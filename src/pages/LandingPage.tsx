@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import imagineLogo from "@/assets/imagine-logo.png.asset.json";
+import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
+import teamArgentina from "@/assets/team-argentina.jpg.asset.json";
 import {
   Lightbulb,
   Users,
@@ -60,15 +61,15 @@ const FeatureCard = ({
 // Floating orbital illustration in brand colors
 const FloatingOrbits = () => (
   <div className="relative w-full max-w-md mx-auto aspect-square" aria-hidden="true">
-    <div className="absolute inset-0 rounded-full border border-cyan-accent/20 animate-[spin_120s_linear_infinite]">
+    <div className="absolute inset-0 rounded-full border border-cyan-accent/20 animate-[spin_240s_linear_infinite]">
       <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[hsl(var(--rubik-red))] shadow-[0_0_30px_hsl(var(--rubik-red)/0.6)]" />
       <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 rounded-full bg-[hsl(var(--rubik-yellow))] shadow-[0_0_30px_hsl(var(--rubik-yellow)/0.6)]" />
     </div>
-    <div className="absolute inset-8 rounded-full border border-cyan-accent/30 animate-[spin_80s_linear_infinite_reverse]">
+    <div className="absolute inset-8 rounded-full border border-cyan-accent/30 animate-[spin_180s_linear_infinite_reverse]">
       <span className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[hsl(var(--rubik-green))] shadow-[0_0_25px_hsl(var(--rubik-green)/0.6)]" />
       <span className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[hsl(var(--rubik-blue))] shadow-[0_0_25px_hsl(var(--rubik-blue)/0.6)]" />
     </div>
-    <div className="absolute inset-20 rounded-full border border-cyan-accent/40 animate-[spin_50s_linear_infinite]">
+    <div className="absolute inset-20 rounded-full border border-cyan-accent/40 animate-[spin_120s_linear_infinite]">
       <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[hsl(var(--rubik-orange))] shadow-[0_0_20px_hsl(var(--rubik-orange)/0.7)]" />
     </div>
     <div className="absolute inset-0 flex items-center justify-center">
@@ -195,10 +196,18 @@ const LandingPage = () => {
           <p className="text-cyan-accent uppercase tracking-[0.3em] text-xs mb-4 font-medium">
             Ventajas competitivas
           </p>
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight">
-            Equipo en Argentina, productos para el mundo.
-          </h2>
-          <p className="text-lg text-muted-foreground mb-14 max-w-3xl">{"\n"}</p>
+          <div className="grid md:grid-cols-[1.3fr_1fr] gap-10 items-center mb-14">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-tight">
+              Equipo en Argentina, productos para el mundo.
+            </h2>
+            <div className="rounded-2xl overflow-hidden card-glow aspect-[4/3] bg-card/40">
+              <img
+                src={teamArgentina.url}
+                alt="Equipo de Imagine trabajando en Argentina"
+                className="w-full h-full object-cover object-left"
+              />
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             <FeatureCard icon={Sparkles} title="Creatividad argentina">
