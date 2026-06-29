@@ -60,15 +60,15 @@ const FeatureCard = ({
 // Floating orbital illustration in brand colors
 const FloatingOrbits = () => (
   <div className="relative w-full max-w-md mx-auto aspect-square" aria-hidden="true">
-    <div className="absolute inset-0 rounded-full border border-cyan-accent/20 animate-[spin_30s_linear_infinite]">
+    <div className="absolute inset-0 rounded-full border border-cyan-accent/20 animate-[spin_120s_linear_infinite]">
       <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[hsl(var(--rubik-red))] shadow-[0_0_30px_hsl(var(--rubik-red)/0.6)]" />
       <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 rounded-full bg-[hsl(var(--rubik-yellow))] shadow-[0_0_30px_hsl(var(--rubik-yellow)/0.6)]" />
     </div>
-    <div className="absolute inset-8 rounded-full border border-cyan-accent/30 animate-[spin_18s_linear_infinite_reverse]">
+    <div className="absolute inset-8 rounded-full border border-cyan-accent/30 animate-[spin_80s_linear_infinite_reverse]">
       <span className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-4 h-4 rounded-full bg-[hsl(var(--rubik-green))] shadow-[0_0_25px_hsl(var(--rubik-green)/0.6)]" />
       <span className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[hsl(var(--rubik-blue))] shadow-[0_0_25px_hsl(var(--rubik-blue)/0.6)]" />
     </div>
-    <div className="absolute inset-20 rounded-full border border-cyan-accent/40 animate-[spin_10s_linear_infinite]">
+    <div className="absolute inset-20 rounded-full border border-cyan-accent/40 animate-[spin_50s_linear_infinite]">
       <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[hsl(var(--rubik-orange))] shadow-[0_0_20px_hsl(var(--rubik-orange)/0.7)]" />
     </div>
     <div className="absolute inset-0 flex items-center justify-center">
@@ -145,7 +145,7 @@ const LandingPage = () => {
           <img
             src={imagineLogo.url}
             alt="Imagine"
-            className="h-12 md:h-14 w-auto"
+            className="h-36 md:h-40 w-auto"
           />
           <div className="hidden md:flex gap-8 text-sm uppercase tracking-widest text-muted-foreground">
             <a href="#tesis" className="hover:text-cyan-accent transition">Tesis</a>
@@ -319,6 +319,11 @@ const LandingPage = () => {
               title: "Analizar e iterar",
               text: "Estudiamos data del MVP, interacciones y campañas para extraer insights y decidir si la hipótesis se valida — y por qué.",
             },
+            {
+              n: "06",
+              title: "Construir empresa y software escalable",
+              text: "Una vez validado el valor del sistema y el interés en el mercado, construimos software profesional y un equipo independiente para el proyecto.",
+            },
           ].map((step) => (
             <li
               key={step.n}
@@ -342,27 +347,51 @@ const LandingPage = () => {
 
       {/* FOOTER */}
       <footer className="border-t border-border/60 bg-navy-deep">
-        <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-8 items-start">
-          <div>
+        <div className="max-w-6xl mx-auto px-6 py-14 grid grid-cols-2 md:grid-cols-5 gap-8 items-start">
+          <div className="col-span-2 md:col-span-1">
             <p className="font-script text-cyan-accent text-2xl">imagine</p>
-            <p className="text-muted-foreground text-sm mt-2 max-w-xs">
-              Venture Builder Cooperativo. Construimos juntos, sin la presión del
-              dinero.
+            <p className="text-muted-foreground text-sm mt-2">
+              Venture Builder Cooperativo.
             </p>
           </div>
-          <div className="md:text-center">
+          <div>
+            <p className="uppercase tracking-widest text-xs text-cyan-accent mb-3">
+              Proyecto
+            </p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><a href="/#tesis" className="hover:text-cyan-accent transition">Tesis</a></li>
+              <li><a href="/#sistema" className="hover:text-cyan-accent transition">Sistema</a></li>
+              <li><a href="/#gobernanza" className="hover:text-cyan-accent transition">Gobernanza</a></li>
+            </ul>
+          </div>
+          <div>
+            <p className="uppercase tracking-widest text-xs text-cyan-accent mb-3">
+              Privacidad
+            </p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/privacidad" className="hover:text-cyan-accent transition">Política de privacidad</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="uppercase tracking-widest text-xs text-cyan-accent mb-3">
+              Cookies
+            </p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/cookies" className="hover:text-cyan-accent transition">Política de cookies</Link></li>
+            </ul>
+          </div>
+          <div>
             <p className="uppercase tracking-widest text-xs text-cyan-accent mb-3">
               Legal
             </p>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/privacidad" className="hover:text-cyan-accent transition">Política de privacidad</Link></li>
-              <li><Link to="/cookies" className="hover:text-cyan-accent transition">Política de cookies</Link></li>
               <li><Link to="/aviso-legal" className="hover:text-cyan-accent transition">Aviso legal</Link></li>
             </ul>
           </div>
-          <div className="md:text-right text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Imagine.
-            <br />Todos los derechos reservados.
+        </div>
+        <div className="border-t border-border/40">
+          <div className="max-w-6xl mx-auto px-6 py-6 text-xs text-muted-foreground text-center">
+            © {new Date().getFullYear()} Imagine. Todos los derechos reservados.
           </div>
         </div>
       </footer>
