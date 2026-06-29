@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo.png.asset.json";
 
 type PageKey = "privacidad" | "cookies" | "aviso-legal";
@@ -77,17 +77,15 @@ const CONTENT: Record<PageKey, { title: string; sections: { h: string; p: string
   },
 };
 
-const LegalPage = () => {
-  const location = useLocation();
-  const key = location.pathname.replace("/", "") as PageKey;
-  const data = CONTENT[key] ?? CONTENT["aviso-legal"];
+const PAGE_KEYS: PageKey[] = ["privacidad", "cookies", "aviso-legal"];
 
+const LegalPage = () => {
   return (
     <main className="min-h-screen text-foreground">
       <header className="gradient-hero">
         <nav className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
           <Link to="/">
-            <img src={imagineLogo.url} alt="Imagine" className="h-12 md:h-14 w-auto" />
+            <img src={imagineLogo.url} alt="Imagine" className="h-36 md:h-40 w-auto" />
           </Link>
           <Link
             to="/"
@@ -98,20 +96,30 @@ const LegalPage = () => {
         </nav>
       </header>
 
-      <article className="max-w-3xl mx-auto px-6 py-20">
-        <p className="text-cyan-accent uppercase tracking-[0.3em] text-xs mb-4 font-medium">
-          Información legal
-        </p>
-        <h1 className="font-display text-4xl md:text-6xl mb-12 leading-tight">
-          {data.title}
-        </h1>
-        <div className="space-y-10">
-          {data.sections.map((s) => (
-            <section key={s.h}>
-              <h2 className="font-display text-2xl mb-3 text-foreground">{s.h}</h2>
-              <p className="text-muted-foreground leading-relaxed text-lg">{s.p}</p>
-            </section>
-          ))}
+      <article className="max-w-7xl mx-auto px-6 py-20">
+        <div className="grid md:grid-cols-3 gap-10 lg:gap-14">
+          {PAGE_KEYS.map((k) => {
+            const data = CONTENT[k];
+            return (
+              <section key={k} id={k}>
+                <h2 className="font-display text-2xl md:text-3xl mb-8 leading-tight text-foreground">
+                  {data.title}
+                </h2>
+                <div className="space-y-6">
+                  {data.sections.map((s) => (
+                    <div key={s.h}>
+                      <h3 className="font-display text-base mb-2 text-cyan-accent">
+                        {s.h}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        {s.p}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
         <p className="text-xs text-muted-foreground mt-16 uppercase tracking-widest">
           Última actualización: {new Date().toLocaleDateString("es-ES", { year: "numeric", month: "long" })}
