@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import imagineLogo from "@/assets/imagine-logo.png.asset.json";
+import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 
 type PageKey = "privacidad" | "cookies" | "aviso-legal";
 
