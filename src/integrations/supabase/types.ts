@@ -212,6 +212,30 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       store_submissions: {
         Row: {
           admin_notes: string | null
@@ -277,6 +301,103 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vb_fixed_ownership: {
+        Row: {
+          created_at: string
+          id: string
+          percentage: number
+          project_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          percentage: number
+          project_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          percentage?: number
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vb_fixed_ownership_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vb_projects: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vb_time_entries: {
+        Row: {
+          created_at: string
+          description: string | null
+          hours: number
+          id: string
+          project_id: string
+          user_id: string
+          work_date: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          hours: number
+          id?: string
+          project_id: string
+          user_id: string
+          work_date?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          hours?: number
+          id?: string
+          project_id?: string
+          user_id?: string
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vb_time_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       venture_time_entries: {
         Row: {
@@ -357,7 +478,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "ambassador" | "premium_ambassador" | "admin"
+      app_role: "ambassador" | "premium_ambassador" | "admin" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -485,7 +606,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["ambassador", "premium_ambassador", "admin"],
+      app_role: ["ambassador", "premium_ambassador", "admin", "member"],
     },
   },
 } as const
