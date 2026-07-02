@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+export type EntrySource = "tracked" | "edited" | "manual";
+
 export interface TimeEntry {
   id: string;
   project_id: string;
@@ -8,6 +10,7 @@ export interface TimeEntry {
   hours: number;
   work_date: string;
   description: string | null;
+  source: EntrySource;
   created_at: string;
 }
 
@@ -44,7 +47,13 @@ export function useAllEntries() {
 export function useAddEntry() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (e: { project_id: string; hours: number; work_date: string; description?: string }) => {
+    mutationFn: async (e: {
+      project_id: string;
+      hours: number;
+      work_date: string;
+      description?: string;
+      source: EntrySource;
+    }) => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Not authenticated");
       const { error } = await supabase.from("vb_time_entries").insert({
@@ -53,11 +62,39 @@ export function useAddEntry() {
         hours: e.hours,
         work_date: e.work_date,
         description: e.description ?? null,
-      });
+        source: e.source,
+      } as never);
       if (error) throw error;
     },
     onSuccess: (_d, v) => {
       qc.invalidateQueries({ queryKey: ["vb_entries", v.project_id] });
+      qc.invalidateQueries({ queryKey: ["vb_entries_all"] });
+    },
+  });
+}
+
+export function useUpdateEntry() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (e: {
+      id: string;
+      hours: number;
+      work_date: string;
+      description?: string | null;
+    }) => {
+      const { error } = await supabase
+        .from("vb_time_entries")
+        .update({
+          hours: e.hours,
+          work_date: e.work_date,
+          description: e.description ?? null,
+          source: "edited",
+        } as never)
+        .eq("id", e.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["vb_entries"] });
       qc.invalidateQueries({ queryKey: ["vb_entries_all"] });
     },
   });

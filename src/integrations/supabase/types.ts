@@ -368,6 +368,7 @@ export type Database = {
           hours: number
           id: string
           project_id: string
+          source: string
           user_id: string
           work_date: string
         }
@@ -377,6 +378,7 @@ export type Database = {
           hours: number
           id?: string
           project_id: string
+          source?: string
           user_id: string
           work_date?: string
         }
@@ -386,6 +388,7 @@ export type Database = {
           hours?: number
           id?: string
           project_id?: string
+          source?: string
           user_id?: string
           work_date?: string
         }
