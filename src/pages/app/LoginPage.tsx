@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function LoginPage() {
   const { user, loading, signIn } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -23,13 +24,28 @@ export default function LoginPage() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await signIn(email.trim(), password);
-    setBusy(false);
-    if (error) {
-      toast.error(error);
-      return;
+    try {
+      const value = identifier.trim();
+      let email = value;
+      if (!value.includes("@")) {
+        const { data, error } = await supabase.functions.invoke("resolve-login", {
+          body: { identifier: value },
+        });
+        if (error || !data?.email) {
+          toast.error("Usuario no encontrado");
+          return;
+        }
+        email = data.email as string;
+      }
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      navigate("/app", { replace: true });
+    } finally {
+      setBusy(false);
     }
-    navigate("/app", { replace: true });
   };
 
   return (
@@ -39,8 +55,16 @@ export default function LoginPage() {
         <p className="text-sm text-muted-foreground mb-6">Venture Builder</p>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Label htmlFor="identifier">Nombre o email</Label>
+            <Input
+              id="identifier"
+              type="text"
+              required
+              autoComplete="username"
+              placeholder="Andrea o andrea@imagine.local"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+            />
           </div>
           <div>
             <Label htmlFor="password">Contraseña</Label>
