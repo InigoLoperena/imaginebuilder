@@ -271,7 +271,6 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { icon: Users, label: "Incorporación de nuevos miembros" },
-              { icon: Users, label: "Expulsión de miembros" },
               { icon: Vote, label: "Aprobación de trabajos y presupuestos" },
               { icon: Lightbulb, label: "Aprobación de nuevos proyectos" },
               { icon: Vote, label: "Modificación del acuerdo y contrato" },
