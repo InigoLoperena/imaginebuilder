@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 import teamArgentina from "@/assets/team-argentina.jpg.asset.json";
+import { useProjects } from "@/features/projects/api";
+import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import {
   Lightbulb,
   Users,
@@ -10,6 +12,8 @@ import {
   Clock,
   Languages,
   DollarSign,
+  ExternalLink,
+  FileText,
 } from "lucide-react";
 
 const Section = ({
