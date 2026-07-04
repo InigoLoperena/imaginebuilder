@@ -139,7 +139,7 @@ export default function ProjectPage() {
     }
   };
 
-  const rows = useMemo(() => calculateOwnership(profiles, entries, fixed), [profiles, entries, fixed]);
+  const rows = useMemo(() => calculateOwnership(profiles, entries, fixed, overrides), [profiles, entries, fixed, overrides]);
   const totalHours = entries.reduce((s, e) => s + Number(e.hours), 0);
   const myEntries = entries.filter((e) => e.user_id === user?.id);
 
