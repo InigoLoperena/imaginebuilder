@@ -168,9 +168,21 @@ export default function ProjectPage() {
       </div>
       <div className="flex items-center gap-4">
         <ProjectLogo path={project.logo_url} name={project.name} size={64} />
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-semibold">{project.name}</h1>
           <p className="text-sm text-muted-foreground">Total: {totalHours.toFixed(2)} horas</p>
+          <div className="flex gap-3 mt-1 text-sm">
+            {project.website_url && (
+              <a href={project.website_url} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                Web
+              </a>
+            )}
+            {project.pitch_deck_url && (
+              <a href={project.pitch_deck_url} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                Pitch deck
+              </a>
+            )}
+          </div>
         </div>
       </div>
 
