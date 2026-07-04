@@ -86,11 +86,24 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
   const [name, setName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [deck, setDeck] = useState("");
+  const [desc, setDesc] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const openNew = () => { setEditing(null); setName(""); setFile(null); setOpen(true); };
-  const openEdit = (p: Project) => { setEditing(p); setName(p.name); setFile(null); setOpen(true); };
+  const openNew = () => {
+    setEditing(null); setName(""); setWebsite(""); setDeck(""); setDesc(""); setFile(null); setOpen(true);
+  };
+  const openEdit = (p: Project) => {
+    setEditing(p);
+    setName(p.name);
+    setWebsite(p.website_url ?? "");
+    setDeck(p.pitch_deck_url ?? "");
+    setDesc(p.description ?? "");
+    setFile(null);
+    setOpen(true);
+  };
 
   const save = async () => {
     if (!name.trim()) return toast.error("Nombre requerido");
@@ -98,7 +111,14 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
     try {
       let logo_url: string | null | undefined = editing?.logo_url ?? null;
       if (file) logo_url = await uploadProjectLogo(file);
-      await upsert.mutateAsync({ id: editing?.id, name: name.trim(), logo_url });
+      await upsert.mutateAsync({
+        id: editing?.id,
+        name: name.trim(),
+        logo_url,
+        website_url: website.trim() || null,
+        pitch_deck_url: deck.trim() || null,
+        description: desc.trim() || null,
+      });
       toast.success("Guardado");
       setOpen(false);
     } catch (e) {
@@ -121,6 +141,9 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
             <div className="space-y-3">
               <div><Label>Nombre</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
               <div><Label>Logo</Label><Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
+              <div><Label>Web del proyecto</Label><Input type="url" placeholder="https://…" value={website} onChange={(e) => setWebsite(e.target.value)} /></div>
+              <div><Label>URL del pitch deck</Label><Input type="url" placeholder="https://…" value={deck} onChange={(e) => setDeck(e.target.value)} /></div>
+              <div><Label>Descripción (landing)</Label><Textarea rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} /></div>
               <Button onClick={save} disabled={busy} className="w-full">{busy ? "Guardando…" : "Guardar"}</Button>
             </div>
           </DialogContent>
