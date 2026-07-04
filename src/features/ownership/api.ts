@@ -12,6 +12,12 @@ export interface FixedOwnership {
   user_id: string;
   percentage: number;
 }
+export interface OwnershipOverride {
+  id: string;
+  project_id: string;
+  user_id: string;
+  percentage: number;
+}
 
 export function useProfiles() {
   return useQuery({
@@ -55,5 +61,45 @@ export function useSetFixed() {
       if (error) throw error;
     },
     onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ["vb_fixed", v.project_id] }),
+  });
+}
+
+export function useProjectOverrides(projectId?: string) {
+  return useQuery({
+    queryKey: ["vb_override", projectId],
+    enabled: !!projectId,
+    queryFn: async (): Promise<OwnershipOverride[]> => {
+      const { data, error } = await supabase
+        .from("vb_ownership_override")
+        .select("*")
+        .eq("project_id", projectId!);
+      if (error) throw error;
+      return data as OwnershipOverride[];
+    },
+  });
+}
+
+export function useSetOverride() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (v: { project_id: string; user_id: string; percentage: number | null }) => {
+      if (v.percentage == null) {
+        const { error } = await supabase
+          .from("vb_ownership_override")
+          .delete()
+          .eq("project_id", v.project_id)
+          .eq("user_id", v.user_id);
+        if (error) throw error;
+        return;
+      }
+      const { error } = await supabase
+        .from("vb_ownership_override")
+        .upsert(
+          { project_id: v.project_id, user_id: v.user_id, percentage: v.percentage },
+          { onConflict: "project_id,user_id" },
+        );
+      if (error) throw error;
+    },
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ["vb_override", v.project_id] }),
   });
 }

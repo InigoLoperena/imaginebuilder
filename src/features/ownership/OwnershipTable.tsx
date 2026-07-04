@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { OwnershipRow } from "@/features/ownership/calculateOwnership";
+import { Badge } from "@/components/ui/badge";
 
 export function OwnershipTable({ rows }: { rows: OwnershipRow[] }) {
   return (
@@ -16,10 +17,15 @@ export function OwnershipTable({ rows }: { rows: OwnershipRow[] }) {
       <TableBody>
         {rows.map((r) => (
           <TableRow key={r.user_id}>
-            <TableCell className="font-medium">{r.name}</TableCell>
+            <TableCell className="font-medium">
+              <div className="flex items-center gap-2">
+                {r.name}
+                {r.override != null && <Badge variant="secondary">Asignado por admin</Badge>}
+              </div>
+            </TableCell>
             <TableCell className="text-right">{r.hours.toFixed(2)}</TableCell>
-            <TableCell className="text-right">{r.fixed.toFixed(2)}%</TableCell>
-            <TableCell className="text-right">{r.variable.toFixed(2)}%</TableCell>
+            <TableCell className="text-right text-muted-foreground">{r.fixed.toFixed(2)}%</TableCell>
+            <TableCell className="text-right text-muted-foreground">{r.variable.toFixed(2)}%</TableCell>
             <TableCell className="text-right font-semibold">{r.total.toFixed(2)}%</TableCell>
           </TableRow>
         ))}

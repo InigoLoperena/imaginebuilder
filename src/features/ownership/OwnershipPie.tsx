@@ -5,6 +5,14 @@ export function OwnershipPie({ rows }: { rows: OwnershipRow[] }) {
   const data: { name: string; value: number; fill: string }[] = [];
   rows.forEach((r, i) => {
     const base = OWNERSHIP_COLORS[i % OWNERSHIP_COLORS.length];
+    if (r.override != null) {
+      data.push({
+        name: `${r.name} — asignado admin`,
+        value: Number(r.override.toFixed(2)),
+        fill: base,
+      });
+      return;
+    }
     if (r.fixed > 0) {
       data.push({
         name: `${r.name} — fijo`,

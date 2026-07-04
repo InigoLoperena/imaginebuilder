@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, Project } from "@/features/projects/api";
-import { useProfiles, useProjectFixed, useSetFixed } from "@/features/ownership/api";
+import { useProfiles, useProjectFixed, useSetFixed, useProjectOverrides, useSetOverride } from "@/features/ownership/api";
 import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Trash2, Pencil, Plus, LogOut } from "lucide-react";
 import { useAuth } from "@/features/auth/AuthProvider";
@@ -85,11 +86,24 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
   const [name, setName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [deck, setDeck] = useState("");
+  const [desc, setDesc] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const openNew = () => { setEditing(null); setName(""); setFile(null); setOpen(true); };
-  const openEdit = (p: Project) => { setEditing(p); setName(p.name); setFile(null); setOpen(true); };
+  const openNew = () => {
+    setEditing(null); setName(""); setWebsite(""); setDeck(""); setDesc(""); setFile(null); setOpen(true);
+  };
+  const openEdit = (p: Project) => {
+    setEditing(p);
+    setName(p.name);
+    setWebsite(p.website_url ?? "");
+    setDeck(p.pitch_deck_url ?? "");
+    setDesc(p.description ?? "");
+    setFile(null);
+    setOpen(true);
+  };
 
   const save = async () => {
     if (!name.trim()) return toast.error("Nombre requerido");
@@ -97,7 +111,14 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
     try {
       let logo_url: string | null | undefined = editing?.logo_url ?? null;
       if (file) logo_url = await uploadProjectLogo(file);
-      await upsert.mutateAsync({ id: editing?.id, name: name.trim(), logo_url });
+      await upsert.mutateAsync({
+        id: editing?.id,
+        name: name.trim(),
+        logo_url,
+        website_url: website.trim() || null,
+        pitch_deck_url: deck.trim() || null,
+        description: desc.trim() || null,
+      });
       toast.success("Guardado");
       setOpen(false);
     } catch (e) {
@@ -120,6 +141,9 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
             <div className="space-y-3">
               <div><Label>Nombre</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
               <div><Label>Logo</Label><Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
+              <div><Label>Web del proyecto</Label><Input type="url" placeholder="https://…" value={website} onChange={(e) => setWebsite(e.target.value)} /></div>
+              <div><Label>URL del pitch deck</Label><Input type="url" placeholder="https://…" value={deck} onChange={(e) => setDeck(e.target.value)} /></div>
+              <div><Label>Descripción (landing)</Label><Textarea rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} /></div>
               <Button onClick={save} disabled={busy} className="w-full">{busy ? "Guardando…" : "Guardar"}</Button>
             </div>
           </DialogContent>
@@ -295,6 +319,8 @@ function FixedSection({
               })}
             </TableBody>
           </Table>
+
+          <OverrideEditor projectId={selected} />
         </>
       )}
     </Card>
@@ -311,6 +337,75 @@ function FixedRow({ name, initial, onSave }: { name: string; initial: number; on
       </TableCell>
       <TableCell>
         <Button size="sm" onClick={() => onSave(parseFloat(val) || 0)}>Guardar</Button>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function OverrideEditor({ projectId }: { projectId: string }) {
+  const { data: profiles = [] } = useProfiles();
+  const { data: overrides = [] } = useProjectOverrides(projectId);
+  const setOverride = useSetOverride();
+  const total = overrides.reduce((s, o) => s + Number(o.percentage), 0);
+  return (
+    <div className="mt-8 border-t pt-6">
+      <h3 className="font-semibold mb-1">Override manual del super admin</h3>
+      <p className="text-sm text-muted-foreground mb-3">
+        Asigna libremente el % final a cualquier miembro. Si dejas el campo vacío o en 0 y guardas "Quitar", se usa el cálculo automático (fijo + horas). Suma overrides: <strong>{total.toFixed(2)}%</strong>.
+      </p>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Miembro</TableHead>
+            <TableHead className="w-40">% override</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {profiles.map((p) => {
+            const current = overrides.find((o) => o.user_id === p.id);
+            return (
+              <OverrideRow
+                key={p.id}
+                name={p.full_name || p.email || ""}
+                initial={current?.percentage ?? null}
+                onSave={(v) => setOverride.mutate({ project_id: projectId, user_id: p.id, percentage: v })}
+              />
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function OverrideRow({
+  name,
+  initial,
+  onSave,
+}: {
+  name: string;
+  initial: number | null;
+  onSave: (v: number | null) => void;
+}) {
+  const [val, setVal] = useState(initial != null ? String(initial) : "");
+  return (
+    <TableRow>
+      <TableCell>{name}</TableCell>
+      <TableCell>
+        <Input
+          type="number"
+          step="0.1"
+          min="0"
+          max="100"
+          placeholder="—"
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+        />
+      </TableCell>
+      <TableCell className="flex gap-2">
+        <Button size="sm" onClick={() => onSave(val === "" ? null : parseFloat(val))}>Guardar</Button>
+        <Button size="sm" variant="ghost" onClick={() => { setVal(""); onSave(null); }}>Quitar</Button>
       </TableCell>
     </TableRow>
   );

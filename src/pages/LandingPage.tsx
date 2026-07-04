@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 import teamArgentina from "@/assets/team-argentina.jpg.asset.json";
+import { useProjects } from "@/features/projects/api";
+import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import {
   Lightbulb,
   Users,
@@ -10,6 +12,8 @@ import {
   Clock,
   Languages,
   DollarSign,
+  ExternalLink,
+  FileText,
 } from "lucide-react";
 
 const Section = ({
@@ -138,6 +142,7 @@ const SixSlicePie = () => {
 };
 
 const LandingPage = () => {
+  const { data: projects = [] } = useProjects();
   return (
     <main className="min-h-screen text-foreground">
       {/* HERO */}
@@ -152,6 +157,7 @@ const LandingPage = () => {
             <a href="#tesis" className="hover:text-cyan-accent transition">Tesis</a>
             <a href="#ventajas" className="hover:text-cyan-accent transition">Ventajas</a>
             <a href="#slicing-pie" className="hover:text-cyan-accent transition">Slicing Pie</a>
+            <a href="#proyectos" className="hover:text-cyan-accent transition">Proyectos</a>
             <a href="#gobernanza" className="hover:text-cyan-accent transition">Gobernanza</a>
             <a href="#sistema" className="hover:text-cyan-accent transition">Sistema</a>
           </div>
@@ -253,6 +259,52 @@ const LandingPage = () => {
           <SixSlicePie />
         </div>
       </Section>
+
+      {/* PROYECTOS */}
+      <Section id="proyectos" eyebrow="Proyectos" title="En lo que estamos trabajando">
+        {projects.length === 0 ? (
+          <p className="text-muted-foreground">Pronto anunciaremos nuestros proyectos.</p>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {projects.map((p) => (
+              <div key={p.id} className="card-glow rounded-2xl p-6 bg-card/60 backdrop-blur-sm flex gap-5">
+                <ProjectLogo path={p.logo_url} name={p.name} size={80} className="shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display text-2xl text-foreground mb-2">{p.name}</h3>
+                  {p.description && (
+                    <p className="text-muted-foreground text-base leading-relaxed mb-4">
+                      {p.description}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    {p.website_url && (
+                      <a
+                        href={p.website_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-cyan-accent hover:underline"
+                      >
+                        <ExternalLink className="w-4 h-4" /> Web del proyecto
+                      </a>
+                    )}
+                    {p.pitch_deck_url && (
+                      <a
+                        href={p.pitch_deck_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-cyan-accent hover:underline"
+                      >
+                        <FileText className="w-4 h-4" /> Pitch deck
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
+
 
       {/* GOBERNANZA */}
       <section id="gobernanza" className="bg-card/40 border-y border-border/60">
