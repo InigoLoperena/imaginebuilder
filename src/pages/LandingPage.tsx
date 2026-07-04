@@ -260,6 +260,52 @@ const LandingPage = () => {
         </div>
       </Section>
 
+      {/* PROYECTOS */}
+      <Section id="proyectos" eyebrow="Proyectos" title="En lo que estamos trabajando">
+        {projects.length === 0 ? (
+          <p className="text-muted-foreground">Pronto anunciaremos nuestros proyectos.</p>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {projects.map((p) => (
+              <div key={p.id} className="card-glow rounded-2xl p-6 bg-card/60 backdrop-blur-sm flex gap-5">
+                <ProjectLogo path={p.logo_url} name={p.name} size={80} className="shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display text-2xl text-foreground mb-2">{p.name}</h3>
+                  {p.description && (
+                    <p className="text-muted-foreground text-base leading-relaxed mb-4">
+                      {p.description}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    {p.website_url && (
+                      <a
+                        href={p.website_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-cyan-accent hover:underline"
+                      >
+                        <ExternalLink className="w-4 h-4" /> Web del proyecto
+                      </a>
+                    )}
+                    {p.pitch_deck_url && (
+                      <a
+                        href={p.pitch_deck_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-cyan-accent hover:underline"
+                      >
+                        <FileText className="w-4 h-4" /> Pitch deck
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
+
+
       {/* GOBERNANZA */}
       <section id="gobernanza" className="bg-card/40 border-y border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24 md:py-32">
