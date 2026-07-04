@@ -142,6 +142,7 @@ const SixSlicePie = () => {
 };
 
 const LandingPage = () => {
+  const { data: projects = [] } = useProjects();
   return (
     <main className="min-h-screen text-foreground">
       {/* HERO */}
