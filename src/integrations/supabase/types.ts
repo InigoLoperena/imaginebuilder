@@ -337,27 +337,71 @@ export type Database = {
           },
         ]
       }
-      vb_projects: {
+      vb_ownership_override: {
         Row: {
           created_at: string
           id: string
-          logo_url: string | null
-          name: string
+          percentage: number
+          project_id: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          logo_url?: string | null
-          name: string
+          percentage: number
+          project_id: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          percentage?: number
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vb_ownership_override_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vb_projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          pitch_deck_url: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          pitch_deck_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
           logo_url?: string | null
           name?: string
+          pitch_deck_url?: string | null
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }
