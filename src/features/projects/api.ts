@@ -5,8 +5,20 @@ export interface Project {
   id: string;
   name: string;
   logo_url: string | null;
+  website_url: string | null;
+  pitch_deck_url: string | null;
+  description: string | null;
   created_at: string;
 }
+
+export type ProjectInput = {
+  id?: string;
+  name: string;
+  logo_url?: string | null;
+  website_url?: string | null;
+  pitch_deck_url?: string | null;
+  description?: string | null;
+};
 
 export function useProjects() {
   return useQuery({
@@ -50,12 +62,19 @@ export function useLogoUrl(path: string | null) {
 export function useUpsertProject() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (p: { id?: string; name: string; logo_url?: string | null }) => {
+    mutationFn: async (p: ProjectInput) => {
+      const payload = {
+        name: p.name,
+        logo_url: p.logo_url ?? null,
+        website_url: p.website_url ?? null,
+        pitch_deck_url: p.pitch_deck_url ?? null,
+        description: p.description ?? null,
+      };
       if (p.id) {
-        const { error } = await supabase.from("vb_projects").update({ name: p.name, logo_url: p.logo_url ?? null }).eq("id", p.id);
+        const { error } = await supabase.from("vb_projects").update(payload).eq("id", p.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("vb_projects").insert({ name: p.name, logo_url: p.logo_url ?? null });
+        const { error } = await supabase.from("vb_projects").insert(payload);
         if (error) throw error;
       }
     },

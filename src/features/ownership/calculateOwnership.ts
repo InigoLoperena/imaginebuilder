@@ -1,4 +1,4 @@
-import { FixedOwnership, Profile } from "./api";
+import { FixedOwnership, OwnershipOverride, Profile } from "./api";
 import { TimeEntry } from "../timesheet/api";
 
 export interface OwnershipRow {
@@ -8,14 +8,17 @@ export interface OwnershipRow {
   fixed: number;
   variable: number;
   total: number;
+  override?: number | null;
 }
 
 export function calculateOwnership(
   profiles: Profile[],
   entries: TimeEntry[],
   fixed: FixedOwnership[],
+  overrides: OwnershipOverride[] = [],
 ): OwnershipRow[] {
   const fixedByUser = new Map(fixed.map((f) => [f.user_id, Number(f.percentage)]));
+  const overrideByUser = new Map(overrides.map((o) => [o.user_id, Number(o.percentage)]));
   const totalFixed = fixed.reduce((s, f) => s + Number(f.percentage), 0);
   const pool = Math.max(0, 100 - totalFixed);
 
@@ -29,6 +32,7 @@ export function calculateOwnership(
     ...profiles.map((p) => p.id),
     ...fixedByUser.keys(),
     ...hoursByUser.keys(),
+    ...overrideByUser.keys(),
   ]);
 
   const rows: OwnershipRow[] = [];
@@ -37,8 +41,9 @@ export function calculateOwnership(
     const hours = hoursByUser.get(uid) ?? 0;
     const fx = fixedByUser.get(uid) ?? 0;
     const variable = totalHours > 0 ? (pool * hours) / totalHours : 0;
-    const total = fx + variable;
-    if (total === 0 && hours === 0) continue;
+    const override = overrideByUser.has(uid) ? overrideByUser.get(uid)! : null;
+    const total = override != null ? override : fx + variable;
+    if (total === 0 && hours === 0 && override == null) continue;
     rows.push({
       user_id: uid,
       name: profile?.full_name || profile?.email || uid.slice(0, 8),
@@ -46,6 +51,7 @@ export function calculateOwnership(
       fixed: fx,
       variable,
       total,
+      override,
     });
   }
   return rows.sort((a, b) => b.total - a.total);
