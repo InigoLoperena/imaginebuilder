@@ -93,12 +93,6 @@ const SixSlicePie = () => (
       src={imaginePie.url}
       alt="Reparto de propiedad: Investigación, Diseño, Desarrollo, Contenido, Growth y Comunidad"
       className="w-full max-w-md h-auto"
-      style={{
-        WebkitMaskImage:
-          "radial-gradient(ellipse at center, black 60%, transparent 88%)",
-        maskImage:
-          "radial-gradient(ellipse at center, black 60%, transparent 88%)",
-      }}
     />
   </div>
 );
