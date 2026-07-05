@@ -42,6 +42,7 @@ export default function AdminPage() {
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        <VisibilitySection />
         <ProjectsSection projects={projects} />
         <UsersSection />
         <FixedSection projects={projects} selected={selectedProject} setSelected={setSelectedProject} />
