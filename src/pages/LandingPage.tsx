@@ -161,7 +161,7 @@ const LandingPage = () => {
             <a href="#tesis" className="hover:text-cyan-accent transition">Tesis</a>
             <a href="#ventajas" className="hover:text-cyan-accent transition">Ventajas</a>
             <a href="#slicing-pie" className="hover:text-cyan-accent transition">Slicing Pie</a>
-            <a href="#proyectos" className="hover:text-cyan-accent transition">Proyectos</a>
+            {sectionVisible && <a href="#proyectos" className="hover:text-cyan-accent transition">Proyectos</a>}
             <a href="#gobernanza" className="hover:text-cyan-accent transition">Gobernanza</a>
             <a href="#sistema" className="hover:text-cyan-accent transition">Sistema</a>
           </div>
