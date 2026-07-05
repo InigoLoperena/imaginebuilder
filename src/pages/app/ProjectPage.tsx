@@ -182,6 +182,9 @@ export default function ProjectPage() {
                 Pitch deck
               </a>
             )}
+            <Link to={`/app/projects/${project.id}/equity`} className="text-primary hover:underline">
+              Equity dashboard
+            </Link>
           </div>
         </div>
       </div>
