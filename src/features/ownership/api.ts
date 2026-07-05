@@ -174,3 +174,69 @@ export function useAddMemberWithDilution() {
     },
   });
 }
+
+export interface ProjectSnapshot {
+  id: string;
+  project_id: string;
+  note: string | null;
+  restored: boolean;
+  restored_at: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export function useProjectSnapshots(projectId?: string) {
+  return useQuery({
+    queryKey: ["vb_project_snapshots", projectId],
+    enabled: !!projectId,
+    queryFn: async (): Promise<ProjectSnapshot[]> => {
+      const { data, error } = await supabase
+        .from("vb_project_snapshots")
+        .select("id, project_id, note, restored, restored_at, created_by, created_at")
+        .eq("project_id", projectId!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as ProjectSnapshot[];
+    },
+  });
+}
+
+function invalidateProjectData(qc: ReturnType<typeof useQueryClient>, projectId: string) {
+  qc.invalidateQueries({ queryKey: ["vb_participations", projectId] });
+  qc.invalidateQueries({ queryKey: ["vb_participation_history", projectId] });
+  qc.invalidateQueries({ queryKey: ["vb_fixed", projectId] });
+  qc.invalidateQueries({ queryKey: ["vb_override", projectId] });
+  qc.invalidateQueries({ queryKey: ["vb_project_snapshots", projectId] });
+  qc.invalidateQueries({ queryKey: ["vb_time_entries"] });
+  qc.invalidateQueries({ queryKey: ["equity_transactions"] });
+  qc.invalidateQueries({ queryKey: ["vb_time_entries_all"] });
+}
+
+export function useResetProject() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (v: { project_id: string; note?: string }) => {
+      const { data, error } = await supabase.rpc("vb_reset_project", {
+        _project_id: v.project_id,
+        _note: v.note ?? null,
+      });
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: (_d, v) => invalidateProjectData(qc, v.project_id),
+  });
+}
+
+export function useRestoreSnapshot() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (v: { snapshot_id: string; project_id: string }) => {
+      const { error } = await supabase.rpc("vb_restore_project_snapshot", {
+        _snapshot_id: v.snapshot_id,
+      });
+      if (error) throw error;
+    },
+    onSuccess: (_d, v) => invalidateProjectData(qc, v.project_id),
+  });
+}
+
