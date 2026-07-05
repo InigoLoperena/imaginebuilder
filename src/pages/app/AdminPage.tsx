@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, useToggleProjectVisibility, useAppSettings, useUpdateAppSettings, Project } from "@/features/projects/api";
 import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, Profile, Participation } from "@/features/ownership/api";
 import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
+import { useUpdateHourStatus } from "@/features/equity/api";
+import { Badge } from "@/components/ui/badge";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
