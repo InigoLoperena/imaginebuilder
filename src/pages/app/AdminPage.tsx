@@ -320,7 +320,7 @@ function FixedSection({
             </TableBody>
           </Table>
 
-          <OverrideEditor projectId={selected} />
+          
         </>
       )}
     </Card>
