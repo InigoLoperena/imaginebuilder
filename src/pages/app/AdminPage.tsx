@@ -59,6 +59,8 @@ export default function AdminPage() {
         <UsersSection />
         <FixedSection projects={projects} selected={selectedProject} setSelected={setSelectedProject} />
         <DilutionSection projects={projects} />
+        <ResetSection projects={projects} />
+
         <Card className="p-5">
           <h2 className="font-semibold mb-4">Todos los registros de tiempo</h2>
           <Table>
