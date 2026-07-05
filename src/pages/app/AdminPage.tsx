@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, Project } from "@/features/projects/api";
-import { useProfiles, useProjectFixed, useSetFixed, useProjectOverrides, useSetOverride } from "@/features/ownership/api";
+import { useProfiles, useProjectFixed, useSetFixed } from "@/features/ownership/api";
 import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
