@@ -12,7 +12,7 @@ export function ContributorEquityTable({
   showVesting?: boolean;
 }) {
   if (allocations.length === 0) {
-    return <Card className="p-6 text-sm text-muted-foreground">No allocations yet.</Card>;
+    return <Card className="p-6 text-sm text-muted-foreground">Todavía no hay asignaciones.</Card>;
   }
   const maxEarned = Math.max(...allocations.map((a) => a.earned_pct), 0.0001);
   return (
@@ -20,11 +20,11 @@ export function ContributorEquityTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Contributor</TableHead>
-            <TableHead className="text-right">Hours</TableHead>
-            <TableHead className="text-right">Earned %</TableHead>
-            {showVesting && <TableHead className="text-right">Vested %</TableHead>}
-            <TableHead className="w-40">Share</TableHead>
+            <TableHead>Colaborador</TableHead>
+            <TableHead className="text-right">Horas</TableHead>
+            <TableHead className="text-right">% ganado</TableHead>
+            {showVesting && <TableHead className="text-right">% consolidado</TableHead>}
+            <TableHead className="w-40">Participación</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
