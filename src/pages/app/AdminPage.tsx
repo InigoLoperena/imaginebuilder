@@ -400,6 +400,9 @@ function DilutionSection({ projects }: { projects: Project[] }) {
   const [projectId, setProjectId] = useState<string>("");
   const { data: participations = [] } = useParticipations(projectId || undefined);
   const { data: history = [] } = useParticipationHistory(projectId || undefined);
+  const { data: fixed = [] } = useProjectFixed(projectId || undefined);
+  const { data: overrides = [] } = useProjectOverrides(projectId || undefined);
+  const { data: entries = [] } = useProjectEntries(projectId || undefined);
   const addMember = useAddMemberWithDilution();
 
   const [userId, setUserId] = useState<string>("");
@@ -411,24 +414,25 @@ function DilutionSection({ projects }: { projects: Project[] }) {
     return p?.full_name || p?.email || uid.slice(0, 8);
   };
 
-  const total = participations.reduce((s, p) => s + Number(p.percentage), 0);
+  // Effective ownership from the real cap table (fixed + variable-by-hours + overrides)
+  const effective = useMemo(
+    () => calculateOwnership(profiles, entries, fixed, overrides),
+    [profiles, entries, fixed, overrides]
+  );
+  const total = effective.reduce((s, r) => s + r.total, 0);
 
   const P = parseFloat(pct);
   const validPct = !Number.isNaN(P) && P > 0 && P < 100;
   const factor = validPct ? 1 - P / 100 : 1;
 
-  const preview = participations
-    .filter((p) => p.user_id !== userId)
-    .map((p) => ({
-      user_id: p.user_id,
-      before: Number(p.percentage),
-      after: Number(p.percentage) * factor,
-    }));
-  const existingNew = participations.find((p) => p.user_id === userId);
+  const preview = effective
+    .filter((r) => r.user_id !== userId)
+    .map((r) => ({ user_id: r.user_id, before: r.total, after: r.total * factor }));
+  const existingNew = effective.find((r) => r.user_id === userId);
   if (userId) {
     preview.push({
       user_id: userId,
-      before: existingNew ? Number(existingNew.percentage) : 0,
+      before: existingNew ? existingNew.total : 0,
       after: validPct ? P : 0,
     });
   }
@@ -446,6 +450,7 @@ function DilutionSection({ projects }: { projects: Project[] }) {
       toast.error((e as Error).message);
     }
   };
+
 
   return (
     <Card className="p-5">
