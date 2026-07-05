@@ -34,11 +34,16 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="font-semibold">Admin · Venture Builder</div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" asChild><Link to="/Venturebuilder/equity">Equity</Link></Button>
-            <Button variant="outline" size="sm" asChild><Link to="/app">App</Link></Button>
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+          <div className="font-semibold shrink-0">Admin · Venture Builder</div>
+          <nav className="flex items-center gap-1 flex-1 justify-center">
+            <Button variant="ghost" size="sm" asChild><Link to="/Venturebuilder">Panel admin</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link to="/Venturebuilder/equity">Ajustes de equity</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link to="/app">Proyectos</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link to="/app/me/equity">Mi equity</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link to="/app/como-funciona">Cómo funciona</Link></Button>
+          </nav>
+          <div className="flex gap-2 shrink-0">
             <Button variant="ghost" size="sm" onClick={async () => { await signOut(); navigate("/login"); }}>
               <LogOut className="h-4 w-4 mr-1" /> Salir
             </Button>

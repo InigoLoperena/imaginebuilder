@@ -43,7 +43,7 @@ export function PolicyForm({ projectId, onCreated }: { projectId: string; onCrea
       vesting_duration_months: Number(duration),
     });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
+      toast.error(parsed.error.issues[0]?.message ?? "Datos no válidos");
       return;
     }
     try {
@@ -59,7 +59,7 @@ export function PolicyForm({ projectId, onCreated }: { projectId: string; onCrea
         vesting_duration_months: parsed.data.vesting_duration_months,
         is_active: false,
       });
-      toast.success("Policy created (inactive). Activate it to apply.");
+      toast.success("Política creada (inactiva). Actívala para aplicarla.");
       onCreated?.();
     } catch (e) {
       toast.error((e as Error).message);
@@ -68,64 +68,64 @@ export function PolicyForm({ projectId, onCreated }: { projectId: string; onCrea
 
   return (
     <Card className="p-5 space-y-4">
-      <h3 className="font-semibold">New equity policy</h3>
+      <h3 className="font-semibold">Nueva política de equity</h3>
       <div className="grid md:grid-cols-2 gap-4">
         <div>
-          <Label>Model</Label>
+          <Label>Modelo</Label>
           <Select value={type} onValueChange={(v) => setType(v as EquityModel)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="dynamic_pool">Dynamic Hours Pool</SelectItem>
-              <SelectItem value="fixed_conversion">Fixed Hour Conversion</SelectItem>
+              <SelectItem value="dynamic_pool">Pool Dinámico de Horas</SelectItem>
+              <SelectItem value="fixed_conversion">Conversión Fija de Horas</SelectItem>
             </SelectContent>
           </Select>
         </div>
         {type === "fixed_conversion" && (
           <div>
-            <Label>Hours per 1% equity</Label>
+            <Label>Horas por 1% de equity</Label>
             <Input type="number" step="0.01" min="0.01" value={hoursPerPct} onChange={(e) => setHoursPerPct(e.target.value)} />
           </div>
         )}
         <div>
-          <Label>Maximum equity (%)</Label>
+          <Label>Equity máximo (%)</Label>
           <Input type="number" step="0.01" min="0" max="100" value={maxEquity} onChange={(e) => setMaxEquity(e.target.value)} />
         </div>
         <div>
-          <Label>Which hours count</Label>
+          <Label>Qué horas cuentan</Label>
           <Select value={countMode} onValueChange={(v) => setCountMode(v as EquityCountMode)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="approved_only">Approved only</SelectItem>
-              <SelectItem value="all">All submitted</SelectItem>
+              <SelectItem value="approved_only">Solo aprobadas</SelectItem>
+              <SelectItem value="all">Todas las registradas</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label>Rounding</Label>
+          <Label>Redondeo</Label>
           <Select value={rounding} onValueChange={(v) => setRounding(v as EquityRounding)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="two">2 decimals</SelectItem>
-              <SelectItem value="four">4 decimals</SelectItem>
-              <SelectItem value="none">No rounding</SelectItem>
+              <SelectItem value="two">2 decimales</SelectItem>
+              <SelectItem value="four">4 decimales</SelectItem>
+              <SelectItem value="none">Sin redondeo</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label>Effective from</Label>
+          <Label>Fecha de efecto</Label>
           <Input type="date" value={effective} onChange={(e) => setEffective(e.target.value)} />
         </div>
         <div>
-          <Label>Vesting cliff (months)</Label>
+          <Label>Cliff de vesting (meses)</Label>
           <Input type="number" min="0" max="120" value={cliff} onChange={(e) => setCliff(e.target.value)} />
         </div>
         <div>
-          <Label>Vesting duration (months)</Label>
+          <Label>Duración de vesting (meses)</Label>
           <Input type="number" min="0" max="240" value={duration} onChange={(e) => setDuration(e.target.value)} />
         </div>
       </div>
       <Button onClick={submit} disabled={create.isPending}>
-        {create.isPending ? "Creating…" : "Create policy"}
+        {create.isPending ? "Creando…" : "Crear política"}
       </Button>
     </Card>
   );

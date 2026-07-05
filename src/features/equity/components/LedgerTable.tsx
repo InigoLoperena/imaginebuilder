@@ -10,19 +10,19 @@ export function LedgerTable({
   nameOf: (userId: string) => string;
 }) {
   if (transactions.length === 0) {
-    return <Card className="p-6 text-sm text-muted-foreground">No transactions yet.</Card>;
+    return <Card className="p-6 text-sm text-muted-foreground">Todavía no hay transacciones.</Card>;
   }
   return (
     <Card className="p-0 overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Contributor</TableHead>
-            <TableHead className="text-right">Hours</TableHead>
+            <TableHead>Fecha</TableHead>
+            <TableHead>Colaborador</TableHead>
+            <TableHead className="text-right">Horas</TableHead>
             <TableHead className="text-right">Δ %</TableHead>
-            <TableHead>Policy</TableHead>
-            <TableHead>Reason</TableHead>
+            <TableHead>Política</TableHead>
+            <TableHead>Motivo</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -31,7 +31,7 @@ export function LedgerTable({
             return (
               <TableRow key={tx.id}>
                 <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                  {new Date(tx.created_at).toLocaleString()}
+                  {new Date(tx.created_at).toLocaleString("es-ES")}
                 </TableCell>
                 <TableCell>{nameOf(tx.user_id)}</TableCell>
                 <TableCell className="text-right tabular-nums">{Number(tx.hours).toFixed(2)}</TableCell>
