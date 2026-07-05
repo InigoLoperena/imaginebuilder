@@ -55,6 +55,7 @@ const App = () => (
                   <Route path="/app" element={<RequireAuth><AppLayout /></RequireAuth>}>
                     <Route index element={<DashboardPage />} />
                     <Route path="me/equity" element={<MyEquityPage />} />
+                    <Route path="como-funciona" element={<HowItWorksPage />} />
                     <Route path="projects/:id" element={<ProjectPage />} />
                     <Route path="projects/:id/equity" element={<ProjectEquityPage />} />
                     <Route path="projects/:id/equity/ledger" element={<EquityLedgerPage />} />
