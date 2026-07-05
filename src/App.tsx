@@ -22,6 +22,7 @@ const EquitySettingsPage = lazy(() => import("./features/equity/pages/EquitySett
 const ProjectEquityPage = lazy(() => import("./features/equity/pages/ProjectEquityPage"));
 const EquityLedgerPage = lazy(() => import("./features/equity/pages/EquityLedgerPage"));
 const MyEquityPage = lazy(() => import("./features/equity/pages/MyEquityPage"));
+const HowItWorksPage = lazy(() => import("./pages/app/HowItWorksPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
