@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, Project } from "@/features/projects/api";
+import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, useToggleProjectVisibility, useAppSettings, useUpdateAppSettings, Project } from "@/features/projects/api";
 import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, Profile, Participation } from "@/features/ownership/api";
 import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -41,6 +42,7 @@ export default function AdminPage() {
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        <VisibilitySection />
         <ProjectsSection projects={projects} />
         <UsersSection />
         <FixedSection projects={projects} selected={selectedProject} setSelected={setSelectedProject} />
@@ -152,27 +154,47 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {projects.map((p) => (
-          <Card key={p.id} className="p-4 flex items-center gap-3">
-            <ProjectLogo path={p.logo_url} name={p.name} size={48} />
-            <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{p.name}</div>
-            </div>
-            <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                if (confirm(`¿Eliminar "${p.name}"? Se borrarán sus horas y asignaciones.`)) del.mutate(p.id);
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </Card>
+          <ProjectAdminCard key={p.id} project={p} onEdit={() => openEdit(p)} onDelete={() => {
+            if (confirm(`¿Eliminar "${p.name}"? Se borrarán sus horas y asignaciones.`)) del.mutate(p.id);
+          }} />
         ))}
       </div>
     </Card>
   );
 }
+
+function ProjectAdminCard({ project, onEdit, onDelete }: { project: Project; onEdit: () => void; onDelete: () => void }) {
+  const toggle = useToggleProjectVisibility();
+  return (
+    <Card className="p-4 space-y-3">
+      <div className="flex items-center gap-3">
+        <ProjectLogo path={project.logo_url} name={project.name} size={48} />
+        <div className="flex-1 min-w-0">
+          <div className="font-medium truncate">{project.name}</div>
+        </div>
+        <Button variant="ghost" size="icon" onClick={onEdit}><Pencil className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" onClick={onDelete}><Trash2 className="h-4 w-4" /></Button>
+      </div>
+      <div className="space-y-2 pt-2 border-t">
+        <div className="flex items-center justify-between text-sm">
+          <span>Visible en landing</span>
+          <Switch
+            checked={project.visible_landing}
+            onCheckedChange={(v) => toggle.mutate({ id: project.id, field: "visible_landing", value: v })}
+          />
+        </div>
+        <div className="flex items-center justify-between text-sm">
+          <span>Visible interno (miembros)</span>
+          <Switch
+            checked={project.visible_internal}
+            onCheckedChange={(v) => toggle.mutate({ id: project.id, field: "visible_internal", value: v })}
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 
 function UsersSection() {
   const { data: profiles = [] } = useProfiles();
@@ -541,3 +563,44 @@ function DilutionSection({ projects }: { projects: Project[] }) {
   );
 }
 
+
+function VisibilitySection() {
+  const { data: settings } = useAppSettings();
+  const update = useUpdateAppSettings();
+  return (
+    <Card className="p-5">
+      <h2 className="font-semibold mb-1">Visibilidad de la sección "Proyectos"</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Controla si la sección completa aparece en la landing pública y en el panel interno de los miembros. La visibilidad por proyecto se ajusta en la tarjeta de cada uno.
+      </p>
+      <div className="space-y-3 max-w-md">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium">Landing pública</div>
+            <div className="text-xs text-muted-foreground">Sección "En lo que estamos trabajando"</div>
+          </div>
+          <Switch
+            checked={settings?.landing_projects_section_visible ?? true}
+            onCheckedChange={(v) => update.mutate({ landing_projects_section_visible: v }, {
+              onSuccess: () => toast.success("Actualizado"),
+              onError: (e) => toast.error((e as Error).message),
+            })}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium">Panel interno (miembros)</div>
+            <div className="text-xs text-muted-foreground">Listado de proyectos dentro del Venture Builder</div>
+          </div>
+          <Switch
+            checked={settings?.internal_projects_section_visible ?? true}
+            onCheckedChange={(v) => update.mutate({ internal_projects_section_visible: v }, {
+              onSuccess: () => toast.success("Actualizado"),
+              onError: (e) => toast.error((e as Error).message),
+            })}
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}

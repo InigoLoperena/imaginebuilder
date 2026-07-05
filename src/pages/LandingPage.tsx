@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 import teamArgentina from "@/assets/team-argentina-new.png.asset.json";
 import rocketsLatam from "@/assets/rockets-latam.jpg.asset.json";
-import { useProjects } from "@/features/projects/api";
+import { useProjects, useAppSettings } from "@/features/projects/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import {
   Lightbulb,
@@ -143,7 +143,10 @@ const SixSlicePie = () => {
 };
 
 const LandingPage = () => {
-  const { data: projects = [] } = useProjects();
+  const { data: allProjects = [] } = useProjects();
+  const { data: settings } = useAppSettings();
+  const sectionVisible = settings?.landing_projects_section_visible ?? true;
+  const projects = allProjects.filter((p) => p.visible_landing);
   return (
     <main className="min-h-screen text-foreground">
       {/* HERO */}
@@ -158,7 +161,7 @@ const LandingPage = () => {
             <a href="#tesis" className="hover:text-cyan-accent transition">Tesis</a>
             <a href="#ventajas" className="hover:text-cyan-accent transition">Ventajas</a>
             <a href="#slicing-pie" className="hover:text-cyan-accent transition">Slicing Pie</a>
-            <a href="#proyectos" className="hover:text-cyan-accent transition">Proyectos</a>
+            {sectionVisible && <a href="#proyectos" className="hover:text-cyan-accent transition">Proyectos</a>}
             <a href="#gobernanza" className="hover:text-cyan-accent transition">Gobernanza</a>
             <a href="#sistema" className="hover:text-cyan-accent transition">Sistema</a>
           </div>
@@ -274,6 +277,7 @@ const LandingPage = () => {
       </Section>
 
       {/* PROYECTOS */}
+      {sectionVisible && (
       <Section id="proyectos" eyebrow="Proyectos" title="En lo que estamos trabajando">
         {projects.length === 0 ? (
           <p className="text-muted-foreground">Pronto anunciaremos nuestros proyectos.</p>
@@ -317,6 +321,8 @@ const LandingPage = () => {
           </div>
         )}
       </Section>
+      )}
+
 
 
       {/* GOBERNANZA */}
