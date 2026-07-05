@@ -9,7 +9,7 @@ import {
   type TimeEntry,
   type EntrySource,
 } from "@/features/timesheet/api";
-import { useProjectFixed, useProfiles, useProjectOverrides } from "@/features/ownership/api";
+import { useProjectFixed, useProfiles } from "@/features/ownership/api";
 import { calculateOwnership } from "@/features/ownership/calculateOwnership";
 import { OwnershipPie } from "@/features/ownership/OwnershipPie";
 import { OwnershipTable } from "@/features/ownership/OwnershipTable";
