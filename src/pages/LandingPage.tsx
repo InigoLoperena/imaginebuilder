@@ -277,6 +277,7 @@ const LandingPage = () => {
       </Section>
 
       {/* PROYECTOS */}
+      {sectionVisible && (
       <Section id="proyectos" eyebrow="Proyectos" title="En lo que estamos trabajando">
         {projects.length === 0 ? (
           <p className="text-muted-foreground">Pronto anunciaremos nuestros proyectos.</p>
@@ -320,6 +321,8 @@ const LandingPage = () => {
           </div>
         )}
       </Section>
+      )}
+
 
 
       {/* GOBERNANZA */}
