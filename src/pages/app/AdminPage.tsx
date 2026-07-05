@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, Project } from "@/features/projects/api";
-import { useProfiles, useProjectFixed, useSetFixed, useProjectOverrides, useSetOverride } from "@/features/ownership/api";
+import { useProfiles, useProjectFixed, useSetFixed } from "@/features/ownership/api";
 import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
@@ -320,7 +320,7 @@ function FixedSection({
             </TableBody>
           </Table>
 
-          <OverrideEditor projectId={selected} />
+          
         </>
       )}
     </Card>
@@ -337,75 +337,6 @@ function FixedRow({ name, initial, onSave }: { name: string; initial: number; on
       </TableCell>
       <TableCell>
         <Button size="sm" onClick={() => onSave(parseFloat(val) || 0)}>Guardar</Button>
-      </TableCell>
-    </TableRow>
-  );
-}
-
-function OverrideEditor({ projectId }: { projectId: string }) {
-  const { data: profiles = [] } = useProfiles();
-  const { data: overrides = [] } = useProjectOverrides(projectId);
-  const setOverride = useSetOverride();
-  const total = overrides.reduce((s, o) => s + Number(o.percentage), 0);
-  return (
-    <div className="mt-8 border-t pt-6">
-      <h3 className="font-semibold mb-1">Override manual del super admin</h3>
-      <p className="text-sm text-muted-foreground mb-3">
-        Asigna libremente el % final a cualquier miembro. Si dejas el campo vacío o en 0 y guardas "Quitar", se usa el cálculo automático (fijo + horas). Suma overrides: <strong>{total.toFixed(2)}%</strong>.
-      </p>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Miembro</TableHead>
-            <TableHead className="w-40">% override</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {profiles.map((p) => {
-            const current = overrides.find((o) => o.user_id === p.id);
-            return (
-              <OverrideRow
-                key={p.id}
-                name={p.full_name || p.email || ""}
-                initial={current?.percentage ?? null}
-                onSave={(v) => setOverride.mutate({ project_id: projectId, user_id: p.id, percentage: v })}
-              />
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
-
-function OverrideRow({
-  name,
-  initial,
-  onSave,
-}: {
-  name: string;
-  initial: number | null;
-  onSave: (v: number | null) => void;
-}) {
-  const [val, setVal] = useState(initial != null ? String(initial) : "");
-  return (
-    <TableRow>
-      <TableCell>{name}</TableCell>
-      <TableCell>
-        <Input
-          type="number"
-          step="0.1"
-          min="0"
-          max="100"
-          placeholder="—"
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
-        />
-      </TableCell>
-      <TableCell className="flex gap-2">
-        <Button size="sm" onClick={() => onSave(val === "" ? null : parseFloat(val))}>Guardar</Button>
-        <Button size="sm" variant="ghost" onClick={() => { setVal(""); onSave(null); }}>Quitar</Button>
       </TableCell>
     </TableRow>
   );
