@@ -25,18 +25,18 @@ export default function ProjectEquityPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Equity dashboard</div>
-          <h1 className="text-2xl font-semibold">{project?.name ?? "Project"}</h1>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">Panel de equity</div>
+          <h1 className="text-2xl font-semibold">{project?.name ?? "Proyecto"}</h1>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link to={`/app/projects/${id}/equity/ledger`}>View ledger</Link>
+          <Link to={`/app/projects/${id}/equity/ledger`}>Ver ledger</Link>
         </Button>
       </div>
 
       <EquitySummaryCard policy={policy} allocations={allocations} />
 
       <div>
-        <h2 className="font-semibold mb-3">Contributors</h2>
+        <h2 className="font-semibold mb-3">Colaboradores</h2>
         <ContributorEquityTable
           allocations={allocations}
           nameOf={nameOf}
