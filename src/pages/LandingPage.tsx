@@ -136,17 +136,11 @@ const LandingPage = () => {
               </footer>
             </blockquote>
           </div>
-          <div className="relative w-full max-w-md mx-auto aspect-square" aria-hidden="true">
+          <div className="relative w-full max-w-md mx-auto" aria-hidden="true">
             <img
               src={rocketsLatam.url}
               alt=""
-              className="w-full h-full object-cover"
-              style={{
-                WebkitMaskImage:
-                  "radial-gradient(ellipse at center, black 45%, transparent 78%)",
-                maskImage:
-                  "radial-gradient(ellipse at center, black 45%, transparent 78%)",
-              }}
+              className="w-full h-auto block"
             />
           </div>
         </div>
