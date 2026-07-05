@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, useToggleProjectVisibility, useAppSettings, useUpdateAppSettings, Project } from "@/features/projects/api";
 import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, Profile, Participation } from "@/features/ownership/api";
 import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
+import { useUpdateHourStatus } from "@/features/equity/api";
+import { Badge } from "@/components/ui/badge";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +28,7 @@ export default function AdminPage() {
   const { data: profiles = [] } = useProfiles();
   const { data: allEntries = [] } = useAllEntries();
   const delEntry = useDeleteEntry();
+  const setStatus = useUpdateHourStatus();
   const [selectedProject, setSelectedProject] = useState<string>("");
 
   return (
@@ -34,6 +37,7 @@ export default function AdminPage() {
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="font-semibold">Admin · Venture Builder</div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" asChild><Link to="/Venturebuilder/equity">Equity</Link></Button>
             <Button variant="outline" size="sm" asChild><Link to="/app">App</Link></Button>
             <Button variant="ghost" size="sm" onClick={async () => { await signOut(); navigate("/login"); }}>
               <LogOut className="h-4 w-4 mr-1" /> Salir
@@ -56,8 +60,9 @@ export default function AdminPage() {
                 <TableHead>Proyecto</TableHead>
                 <TableHead>Miembro</TableHead>
                 <TableHead>Horas</TableHead>
+                <TableHead>Estado</TableHead>
                 <TableHead>Descripción</TableHead>
-                <TableHead></TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -67,8 +72,23 @@ export default function AdminPage() {
                   <TableCell>{projects.find((p) => p.id === e.project_id)?.name ?? "—"}</TableCell>
                   <TableCell>{profiles.find((p) => p.id === e.user_id)?.full_name || e.user_id.slice(0, 8)}</TableCell>
                   <TableCell>{Number(e.hours).toFixed(2)}</TableCell>
-                  <TableCell className="max-w-xs truncate">{e.description}</TableCell>
                   <TableCell>
+                    <Badge variant={e.status === "approved" ? "default" : e.status === "rejected" ? "destructive" : "secondary"}>
+                      {e.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate">{e.description}</TableCell>
+                  <TableCell className="text-right space-x-1">
+                    {e.status !== "approved" && (
+                      <Button size="sm" variant="outline" onClick={() => setStatus.mutate({ id: e.id, status: "approved" })}>
+                        Approve
+                      </Button>
+                    )}
+                    {e.status !== "rejected" && (
+                      <Button size="sm" variant="ghost" onClick={() => setStatus.mutate({ id: e.id, status: "rejected" })}>
+                        Reject
+                      </Button>
+                    )}
                     <Button variant="ghost" size="icon" onClick={() => delEntry.mutate(e.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>

@@ -10,6 +10,7 @@ export interface Project {
   description: string | null;
   visible_landing: boolean;
   visible_internal: boolean;
+  equity_model: "dynamic_pool" | "fixed_conversion";
   created_at: string;
 }
 

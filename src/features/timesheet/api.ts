@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export type EntrySource = "tracked" | "edited" | "manual";
+export type EntryStatus = "pending" | "approved" | "rejected";
 
 export interface TimeEntry {
   id: string;
@@ -11,6 +12,9 @@ export interface TimeEntry {
   work_date: string;
   description: string | null;
   source: EntrySource;
+  status: EntryStatus;
+  approved_by: string | null;
+  approved_at: string | null;
   created_at: string;
 }
 

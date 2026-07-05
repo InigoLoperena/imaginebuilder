@@ -212,6 +212,132 @@ export type Database = {
         }
         Relationships: []
       }
+      equity_policies: {
+        Row: {
+          count_mode: Database["public"]["Enums"]["equity_count_mode"]
+          created_at: string
+          created_by: string | null
+          effective_from: string
+          hours_per_percent: number | null
+          id: string
+          is_active: boolean
+          max_equity: number
+          project_id: string
+          rounding: Database["public"]["Enums"]["equity_rounding"]
+          type: Database["public"]["Enums"]["equity_model"]
+          updated_at: string
+          version: number
+          vesting_cliff_months: number
+          vesting_duration_months: number
+        }
+        Insert: {
+          count_mode?: Database["public"]["Enums"]["equity_count_mode"]
+          created_at?: string
+          created_by?: string | null
+          effective_from?: string
+          hours_per_percent?: number | null
+          id?: string
+          is_active?: boolean
+          max_equity?: number
+          project_id: string
+          rounding?: Database["public"]["Enums"]["equity_rounding"]
+          type: Database["public"]["Enums"]["equity_model"]
+          updated_at?: string
+          version?: number
+          vesting_cliff_months?: number
+          vesting_duration_months?: number
+        }
+        Update: {
+          count_mode?: Database["public"]["Enums"]["equity_count_mode"]
+          created_at?: string
+          created_by?: string | null
+          effective_from?: string
+          hours_per_percent?: number | null
+          id?: string
+          is_active?: boolean
+          max_equity?: number
+          project_id?: string
+          rounding?: Database["public"]["Enums"]["equity_rounding"]
+          type?: Database["public"]["Enums"]["equity_model"]
+          updated_at?: string
+          version?: number
+          vesting_cliff_months?: number
+          vesting_duration_months?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equity_policies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equity_transactions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          hour_entry_id: string | null
+          hours: number
+          id: string
+          percentage_delta: number
+          policy_id: string
+          policy_version: number
+          project_id: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          hour_entry_id?: string | null
+          hours?: number
+          id?: string
+          percentage_delta: number
+          policy_id: string
+          policy_version: number
+          project_id: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          hour_entry_id?: string | null
+          hours?: number
+          id?: string
+          percentage_delta?: number
+          policy_id?: string
+          policy_version?: number
+          project_id?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equity_transactions_hour_entry_id_fkey"
+            columns: ["hour_entry_id"]
+            isOneToOne: false
+            referencedRelation: "vb_time_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equity_transactions_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "equity_policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equity_transactions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -473,6 +599,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          equity_model: Database["public"]["Enums"]["equity_model"]
           id: string
           logo_url: string | null
           name: string
@@ -485,6 +612,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          equity_model?: Database["public"]["Enums"]["equity_model"]
           id?: string
           logo_url?: string | null
           name: string
@@ -497,6 +625,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          equity_model?: Database["public"]["Enums"]["equity_model"]
           id?: string
           logo_url?: string | null
           name?: string
@@ -510,32 +639,41 @@ export type Database = {
       }
       vb_time_entries: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           created_at: string
           description: string | null
           hours: number
           id: string
           project_id: string
           source: string
+          status: Database["public"]["Enums"]["hour_entry_status"]
           user_id: string
           work_date: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           description?: string | null
           hours: number
           id?: string
           project_id: string
           source?: string
+          status?: Database["public"]["Enums"]["hour_entry_status"]
           user_id: string
           work_date?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           description?: string | null
           hours?: number
           id?: string
           project_id?: string
           source?: string
+          status?: Database["public"]["Enums"]["hour_entry_status"]
           user_id?: string
           work_date?: string
         }
@@ -611,6 +749,62 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      equity_activate_policy: {
+        Args: { _policy_id: string }
+        Returns: undefined
+      }
+      equity_active_policy: {
+        Args: { _at?: string; _project_id: string }
+        Returns: {
+          count_mode: Database["public"]["Enums"]["equity_count_mode"]
+          created_at: string
+          created_by: string | null
+          effective_from: string
+          hours_per_percent: number | null
+          id: string
+          is_active: boolean
+          max_equity: number
+          project_id: string
+          rounding: Database["public"]["Enums"]["equity_rounding"]
+          type: Database["public"]["Enums"]["equity_model"]
+          updated_at: string
+          version: number
+          vesting_cliff_months: number
+          vesting_duration_months: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "equity_policies"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      equity_apply_entry: { Args: { _entry_id: string }; Returns: string }
+      equity_post_correction: {
+        Args: {
+          _delta: number
+          _project_id: string
+          _reason: string
+          _user_id: string
+        }
+        Returns: string
+      }
+      equity_round: {
+        Args: {
+          _mode: Database["public"]["Enums"]["equity_rounding"]
+          _value: number
+        }
+        Returns: number
+      }
+      equity_simulate_fixed: {
+        Args: {
+          _hours_per_percent: number
+          _max_equity?: number
+          _project_id: string
+          _rounding?: Database["public"]["Enums"]["equity_rounding"]
+        }
+        Returns: Json
+      }
       get_ambassador_leaderboard: {
         Args: never
         Returns: {
@@ -633,6 +827,10 @@ export type Database = {
     }
     Enums: {
       app_role: "ambassador" | "premium_ambassador" | "admin" | "member"
+      equity_count_mode: "approved_only" | "all"
+      equity_model: "dynamic_pool" | "fixed_conversion"
+      equity_rounding: "two" | "four" | "none"
+      hour_entry_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -761,6 +959,10 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["ambassador", "premium_ambassador", "admin", "member"],
+      equity_count_mode: ["approved_only", "all"],
+      equity_model: ["dynamic_pool", "fixed_conversion"],
+      equity_rounding: ["two", "four", "none"],
+      hour_entry_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
