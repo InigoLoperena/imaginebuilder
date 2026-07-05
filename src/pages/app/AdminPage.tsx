@@ -154,27 +154,47 @@ function ProjectsSection({ projects }: { projects: Project[] }) {
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {projects.map((p) => (
-          <Card key={p.id} className="p-4 flex items-center gap-3">
-            <ProjectLogo path={p.logo_url} name={p.name} size={48} />
-            <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{p.name}</div>
-            </div>
-            <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                if (confirm(`¿Eliminar "${p.name}"? Se borrarán sus horas y asignaciones.`)) del.mutate(p.id);
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </Card>
+          <ProjectAdminCard key={p.id} project={p} onEdit={() => openEdit(p)} onDelete={() => {
+            if (confirm(`¿Eliminar "${p.name}"? Se borrarán sus horas y asignaciones.`)) del.mutate(p.id);
+          }} />
         ))}
       </div>
     </Card>
   );
 }
+
+function ProjectAdminCard({ project, onEdit, onDelete }: { project: Project; onEdit: () => void; onDelete: () => void }) {
+  const toggle = useToggleProjectVisibility();
+  return (
+    <Card className="p-4 space-y-3">
+      <div className="flex items-center gap-3">
+        <ProjectLogo path={project.logo_url} name={project.name} size={48} />
+        <div className="flex-1 min-w-0">
+          <div className="font-medium truncate">{project.name}</div>
+        </div>
+        <Button variant="ghost" size="icon" onClick={onEdit}><Pencil className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" onClick={onDelete}><Trash2 className="h-4 w-4" /></Button>
+      </div>
+      <div className="space-y-2 pt-2 border-t">
+        <div className="flex items-center justify-between text-sm">
+          <span>Visible en landing</span>
+          <Switch
+            checked={project.visible_landing}
+            onCheckedChange={(v) => toggle.mutate({ id: project.id, field: "visible_landing", value: v })}
+          />
+        </div>
+        <div className="flex items-center justify-between text-sm">
+          <span>Visible interno (miembros)</span>
+          <Switch
+            checked={project.visible_internal}
+            onCheckedChange={(v) => toggle.mutate({ id: project.id, field: "visible_internal", value: v })}
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 
 function UsersSection() {
   const { data: profiles = [] } = useProfiles();
