@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 import teamArgentina from "@/assets/team-argentina-new.png.asset.json";
+import rocketsLatam from "@/assets/rockets-latam.jpg.asset.json";
 import { useProjects } from "@/features/projects/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import {
@@ -180,7 +181,19 @@ const LandingPage = () => {
               </footer>
             </blockquote>
           </div>
-          <FloatingOrbits />
+          <div className="relative w-full max-w-md mx-auto aspect-square" aria-hidden="true">
+            <img
+              src={rocketsLatam.url}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{
+                WebkitMaskImage:
+                  "radial-gradient(ellipse at center, black 45%, transparent 78%)",
+                maskImage:
+                  "radial-gradient(ellipse at center, black 45%, transparent 78%)",
+              }}
+            />
+          </div>
         </div>
       </header>
 
