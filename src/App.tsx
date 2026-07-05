@@ -18,6 +18,10 @@ const AppLayout = lazy(() => import("./pages/app/AppLayout"));
 const DashboardPage = lazy(() => import("./pages/app/DashboardPage"));
 const ProjectPage = lazy(() => import("./pages/app/ProjectPage"));
 const AdminPage = lazy(() => import("./pages/app/AdminPage"));
+const EquitySettingsPage = lazy(() => import("./features/equity/pages/EquitySettingsPage"));
+const ProjectEquityPage = lazy(() => import("./features/equity/pages/ProjectEquityPage"));
+const EquityLedgerPage = lazy(() => import("./features/equity/pages/EquityLedgerPage"));
+const MyEquityPage = lazy(() => import("./features/equity/pages/MyEquityPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
