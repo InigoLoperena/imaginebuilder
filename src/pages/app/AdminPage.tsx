@@ -60,8 +60,9 @@ export default function AdminPage() {
                 <TableHead>Proyecto</TableHead>
                 <TableHead>Miembro</TableHead>
                 <TableHead>Horas</TableHead>
+                <TableHead>Estado</TableHead>
                 <TableHead>Descripción</TableHead>
-                <TableHead></TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -71,8 +72,23 @@ export default function AdminPage() {
                   <TableCell>{projects.find((p) => p.id === e.project_id)?.name ?? "—"}</TableCell>
                   <TableCell>{profiles.find((p) => p.id === e.user_id)?.full_name || e.user_id.slice(0, 8)}</TableCell>
                   <TableCell>{Number(e.hours).toFixed(2)}</TableCell>
-                  <TableCell className="max-w-xs truncate">{e.description}</TableCell>
                   <TableCell>
+                    <Badge variant={e.status === "approved" ? "default" : e.status === "rejected" ? "destructive" : "secondary"}>
+                      {e.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate">{e.description}</TableCell>
+                  <TableCell className="text-right space-x-1">
+                    {e.status !== "approved" && (
+                      <Button size="sm" variant="outline" onClick={() => setStatus.mutate({ id: e.id, status: "approved" })}>
+                        Approve
+                      </Button>
+                    )}
+                    {e.status !== "rejected" && (
+                      <Button size="sm" variant="ghost" onClick={() => setStatus.mutate({ id: e.id, status: "rejected" })}>
+                        Reject
+                      </Button>
+                    )}
                     <Button variant="ghost" size="icon" onClick={() => delEntry.mutate(e.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
