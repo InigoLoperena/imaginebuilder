@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
-import teamArgentina from "@/assets/team-argentina.jpg.asset.json";
+import teamArgentina from "@/assets/team-argentina-new.png.asset.json";
 import { useProjects } from "@/features/projects/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import {
@@ -206,11 +206,11 @@ const LandingPage = () => {
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-tight">
               Equipo en Argentina, productos para el mundo.
             </h2>
-            <div className="rounded-2xl overflow-hidden card-glow aspect-[3/4] bg-card/40">
+            <div className="rounded-2xl overflow-hidden card-glow">
               <img
                 src={teamArgentina.url}
                 alt="Equipo de Imagine trabajando en Argentina"
-                className="w-full h-full object-cover object-left"
+                className="w-full h-auto block"
               />
             </div>
           </div>
