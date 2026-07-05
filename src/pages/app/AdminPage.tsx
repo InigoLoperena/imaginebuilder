@@ -28,6 +28,7 @@ export default function AdminPage() {
   const { data: profiles = [] } = useProfiles();
   const { data: allEntries = [] } = useAllEntries();
   const delEntry = useDeleteEntry();
+  const setStatus = useUpdateHourStatus();
   const [selectedProject, setSelectedProject] = useState<string>("");
 
   return (
