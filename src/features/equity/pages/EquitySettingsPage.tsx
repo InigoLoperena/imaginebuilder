@@ -29,18 +29,23 @@ export default function EquitySettingsPage() {
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Equity settings</h1>
-          <p className="text-sm text-muted-foreground">Configure equity allocation per project.</p>
+          <h1 className="text-2xl font-semibold">Ajustes de equity</h1>
+          <p className="text-sm text-muted-foreground">Configura el reparto de equity para cada proyecto.</p>
         </div>
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/Venturebuilder">← Back to admin</Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/app/como-funciona">¿Cómo funciona?</Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/Venturebuilder">← Volver al panel</Link>
+          </Button>
+        </div>
       </div>
 
       <Card className="p-5 max-w-md">
-        <Label>Project</Label>
+        <Label>Proyecto</Label>
         <Select value={projectId} onValueChange={setProjectId}>
-          <SelectTrigger><SelectValue placeholder="Choose a project" /></SelectTrigger>
+          <SelectTrigger><SelectValue placeholder="Elige un proyecto" /></SelectTrigger>
           <SelectContent>
             {projects.map((p) => (
               <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
@@ -55,7 +60,7 @@ export default function EquitySettingsPage() {
             <ProjectLogo path={project.logo_url} name={project.name} size={56} />
             <div className="flex-1">
               <div className="font-semibold">{project.name}</div>
-              <div className="text-xs text-muted-foreground">Active equity model</div>
+              <div className="text-xs text-muted-foreground">Modelo de equity activo</div>
             </div>
             <div className="flex items-center gap-2">
               <Select
@@ -64,13 +69,13 @@ export default function EquitySettingsPage() {
               >
                 <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dynamic_pool">Dynamic Hours Pool</SelectItem>
-                  <SelectItem value="fixed_conversion">Fixed Hour Conversion</SelectItem>
+                  <SelectItem value="dynamic_pool">Pool Dinámico de Horas</SelectItem>
+                  <SelectItem value="fixed_conversion">Conversión Fija de Horas</SelectItem>
                 </SelectContent>
               </Select>
               <SimulatorDialog projectId={project.id} nameOf={nameOf} />
               <Button variant="outline" asChild size="sm">
-                <Link to={`/app/projects/${project.id}/equity`}>Dashboard</Link>
+                <Link to={`/app/projects/${project.id}/equity`}>Panel</Link>
               </Button>
             </div>
           </Card>
