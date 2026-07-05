@@ -50,6 +50,8 @@ export default function ProjectPage() {
   const { data: project } = useProject(id);
   const { data: entries = [] } = useProjectEntries(id);
   const { data: fixed = [] } = useProjectFixed(id);
+  const { data: overrides = [] } = useProjectOverrides(id);
+  
   
   const { data: profiles = [] } = useProfiles();
   const addEntry = useAddEntry();
@@ -139,7 +141,7 @@ export default function ProjectPage() {
     }
   };
 
-  const rows = useMemo(() => calculateOwnership(profiles, entries, fixed), [profiles, entries, fixed]);
+  const rows = useMemo(() => calculateOwnership(profiles, entries, fixed, overrides), [profiles, entries, fixed, overrides]);
   const totalHours = entries.reduce((s, e) => s + Number(e.hours), 0);
   const myEntries = entries.filter((e) => e.user_id === user?.id);
 

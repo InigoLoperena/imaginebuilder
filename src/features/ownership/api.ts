@@ -169,6 +169,8 @@ export function useAddMemberWithDilution() {
     onSuccess: (_d, v) => {
       qc.invalidateQueries({ queryKey: ["vb_participations", v.project_id] });
       qc.invalidateQueries({ queryKey: ["vb_participation_history", v.project_id] });
+      qc.invalidateQueries({ queryKey: ["vb_fixed", v.project_id] });
+      qc.invalidateQueries({ queryKey: ["vb_override", v.project_id] });
     },
   });
 }
