@@ -17,19 +17,19 @@ export function EquitySummaryCard({
   return (
     <div className="grid sm:grid-cols-3 gap-4">
       <Card className="p-5">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">Allocated</div>
+        <div className="text-xs uppercase tracking-wider text-muted-foreground">Asignado</div>
         <div className="text-3xl font-semibold tabular-nums mt-2">{total.toFixed(4)}%</div>
       </Card>
       <Card className="p-5">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">Remaining</div>
+        <div className="text-xs uppercase tracking-wider text-muted-foreground">Disponible</div>
         <div className="text-3xl font-semibold tabular-nums mt-2">{remaining.toFixed(4)}%</div>
-        <div className="text-xs text-muted-foreground mt-1">Cap {cap}%</div>
+        <div className="text-xs text-muted-foreground mt-1">Tope {cap}%</div>
       </Card>
       <Card className="p-5">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">Contributors</div>
+        <div className="text-xs uppercase tracking-wider text-muted-foreground">Colaboradores</div>
         <div className="text-3xl font-semibold tabular-nums mt-2">{contributors}</div>
         <div className="text-xs text-muted-foreground mt-1">
-          Model: {policy?.type === "fixed_conversion" ? "Fixed conversion" : policy?.type === "dynamic_pool" ? "Dynamic pool" : "—"}
+          Modelo: {policy?.type === "fixed_conversion" ? "Conversión fija" : policy?.type === "dynamic_pool" ? "Pool dinámico" : "—"}
         </div>
       </Card>
     </div>
