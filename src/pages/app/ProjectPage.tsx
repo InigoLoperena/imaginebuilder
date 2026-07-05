@@ -50,7 +50,7 @@ export default function ProjectPage() {
   const { data: project } = useProject(id);
   const { data: entries = [] } = useProjectEntries(id);
   const { data: fixed = [] } = useProjectFixed(id);
-  const { data: overrides = [] } = useProjectOverrides(id);
+  
   const { data: profiles = [] } = useProfiles();
   const addEntry = useAddEntry();
   const updateEntry = useUpdateEntry();
