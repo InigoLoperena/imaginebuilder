@@ -67,22 +67,65 @@ export function useUpsertProject() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (p: ProjectInput) => {
-      const payload = {
+      const payload: Record<string, unknown> = {
         name: p.name,
         logo_url: p.logo_url ?? null,
         website_url: p.website_url ?? null,
         pitch_deck_url: p.pitch_deck_url ?? null,
         description: p.description ?? null,
       };
+      if (p.visible_landing !== undefined) payload.visible_landing = p.visible_landing;
+      if (p.visible_internal !== undefined) payload.visible_internal = p.visible_internal;
       if (p.id) {
         const { error } = await supabase.from("vb_projects").update(payload).eq("id", p.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("vb_projects").insert(payload);
+        const { error } = await supabase.from("vb_projects").insert(payload as { name: string });
         if (error) throw error;
       }
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["vb_projects"] }),
+  });
+}
+
+export function useToggleProjectVisibility() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (p: { id: string; field: "visible_landing" | "visible_internal"; value: boolean }) => {
+      const { error } = await supabase.from("vb_projects").update({ [p.field]: p.value }).eq("id", p.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["vb_projects"] }),
+  });
+}
+
+export interface AppSettings {
+  landing_projects_section_visible: boolean;
+  internal_projects_section_visible: boolean;
+}
+
+export function useAppSettings() {
+  return useQuery({
+    queryKey: ["vb_app_settings"],
+    queryFn: async (): Promise<AppSettings> => {
+      const { data, error } = await supabase
+        .from("vb_app_settings")
+        .select("landing_projects_section_visible, internal_projects_section_visible")
+        .maybeSingle();
+      if (error) throw error;
+      return (data as AppSettings) ?? { landing_projects_section_visible: true, internal_projects_section_visible: true };
+    },
+  });
+}
+
+export function useUpdateAppSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (patch: Partial<AppSettings>) => {
+      const { error } = await supabase.from("vb_app_settings").update({ ...patch, updated_at: new Date().toISOString() }).eq("id", true);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["vb_app_settings"] }),
   });
 }
 
