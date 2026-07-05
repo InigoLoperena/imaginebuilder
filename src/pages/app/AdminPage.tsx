@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, useToggleProjectVisibility, useAppSettings, useUpdateAppSettings, Project } from "@/features/projects/api";
-import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, Profile, Participation } from "@/features/ownership/api";
-import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
+import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, useProjectOverrides, useProjectSnapshots, useResetProject, useRestoreSnapshot, Profile, Participation } from "@/features/ownership/api";
+import { calculateOwnership } from "@/features/ownership/calculateOwnership";
+import { useAllEntries, useDeleteEntry, useProjectEntries } from "@/features/timesheet/api";
 import { useUpdateHourStatus } from "@/features/equity/api";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
 import { Badge } from "@/components/ui/badge";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
