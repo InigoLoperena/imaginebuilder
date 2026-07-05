@@ -34,6 +34,7 @@ export default function AdminPage() {
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="font-semibold">Admin · Venture Builder</div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" asChild><Link to="/Venturebuilder/equity">Equity</Link></Button>
             <Button variant="outline" size="sm" asChild><Link to="/app">App</Link></Button>
             <Button variant="ghost" size="sm" onClick={async () => { await signOut(); navigate("/login"); }}>
               <LogOut className="h-4 w-4 mr-1" /> Salir
