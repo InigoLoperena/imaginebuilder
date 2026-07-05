@@ -53,9 +53,13 @@ const App = () => (
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/app" element={<RequireAuth><AppLayout /></RequireAuth>}>
                     <Route index element={<DashboardPage />} />
+                    <Route path="me/equity" element={<MyEquityPage />} />
                     <Route path="projects/:id" element={<ProjectPage />} />
+                    <Route path="projects/:id/equity" element={<ProjectEquityPage />} />
+                    <Route path="projects/:id/equity/ledger" element={<EquityLedgerPage />} />
                   </Route>
                   <Route path="/Venturebuilder" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
+                  <Route path="/Venturebuilder/equity" element={<RequireAdmin><EquitySettingsPage /></RequireAdmin>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
