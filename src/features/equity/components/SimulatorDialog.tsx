@@ -35,47 +35,47 @@ export function SimulatorDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Simulate</Button>
+        <Button variant="outline">Simular</Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Equity simulator</DialogTitle>
+          <DialogTitle>Simulador de equity</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <Label>Hours / 1%</Label>
+            <Label>Horas / 1%</Label>
             <Input type="number" min="0.01" step="0.01" value={hoursPerPct} onChange={(e) => setHoursPerPct(e.target.value)} />
           </div>
           <div>
-            <Label>Cap (%)</Label>
+            <Label>Tope (%)</Label>
             <Input type="number" min="0" max="100" step="0.01" value={maxEquity} onChange={(e) => setMaxEquity(e.target.value)} />
           </div>
           <div>
-            <Label>Rounding</Label>
+            <Label>Redondeo</Label>
             <Select value={rounding} onValueChange={(v) => setRounding(v as EquityRounding)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="two">2 decimals</SelectItem>
-                <SelectItem value="four">4 decimals</SelectItem>
-                <SelectItem value="none">No rounding</SelectItem>
+                <SelectItem value="two">2 decimales</SelectItem>
+                <SelectItem value="four">4 decimales</SelectItem>
+                <SelectItem value="none">Sin redondeo</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         <Button onClick={run} disabled={simulate.isPending}>
-          {simulate.isPending ? "Running…" : "Run simulation"}
+          {simulate.isPending ? "Ejecutando…" : "Ejecutar simulación"}
         </Button>
         {result && (
           <>
             <p className="text-sm text-muted-foreground">
-              Total allocated: <strong>{Number(result.total_allocated).toFixed(4)}%</strong> · Cap: {result.max_equity}%
+              Total asignado: <strong>{Number(result.total_allocated).toFixed(4)}%</strong> · Tope: {result.max_equity}%
             </p>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Contributor</TableHead>
-                  <TableHead className="text-right">Hours</TableHead>
-                  <TableHead className="text-right">Projected %</TableHead>
+                  <TableHead>Colaborador</TableHead>
+                  <TableHead className="text-right">Horas</TableHead>
+                  <TableHead className="text-right">% proyectado</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
