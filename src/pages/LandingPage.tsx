@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 import teamArgentina from "@/assets/team-argentina-new.png.asset.json";
 import rocketsLatam from "@/assets/rockets-latam.jpg.asset.json";
-import imaginePie from "@/assets/imagine-pie.jpg.asset.json";
 import { useProjects } from "@/features/projects/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import {
@@ -86,16 +85,62 @@ const FloatingOrbits = () => (
   </div>
 );
 
-// Imagine ownership pie illustration
-const SixSlicePie = () => (
-  <div className="flex justify-center">
-    <img
-      src={imaginePie.url}
-      alt="Reparto de propiedad: Investigación, Diseño, Desarrollo, Contenido, Growth y Comunidad"
-      className="w-full max-w-md h-auto"
-    />
-  </div>
-);
+// 6-segment colored donut chart
+const SixSlicePie = () => {
+  const slices = [
+    { color: "hsl(var(--rubik-red))", label: "Investigación" },
+    { color: "hsl(var(--rubik-yellow))", label: "Diseño" },
+    { color: "hsl(var(--rubik-green))", label: "Desarrollo" },
+    { color: "hsl(var(--rubik-blue))", label: "Contenido" },
+    { color: "hsl(var(--rubik-orange))", label: "Growth" },
+    { color: "hsl(var(--primary))", label: "Comunidad" },
+  ];
+  const segment = 100 / slices.length;
+  const circumference = 2 * Math.PI * 40;
+  const segLen = (segment / 100) * circumference;
+  const gap = circumference - segLen;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-72 h-72">
+        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+          {slices.map((s, i) => (
+            <circle
+              key={i}
+              cx="50"
+              cy="50"
+              r="40"
+              fill="transparent"
+              stroke={s.color}
+              strokeWidth="20"
+              strokeDasharray={`${segLen} ${gap}`}
+              strokeDashoffset={-i * segLen}
+            />
+          ))}
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <p className="font-script text-cyan-accent text-3xl leading-none">imagine</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1">
+              propiedad
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-2 w-full max-w-sm">
+        {slices.map((s, i) => (
+          <div key={i} className="flex items-center gap-2 text-sm">
+            <span
+              className="w-3 h-3 rounded-sm shrink-0"
+              style={{ backgroundColor: s.color }}
+            />
+            <span className="text-foreground/90">{s.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const LandingPage = () => {
   const { data: projects = [] } = useProjects();
@@ -136,11 +181,17 @@ const LandingPage = () => {
               </footer>
             </blockquote>
           </div>
-          <div className="relative w-full max-w-md mx-auto" aria-hidden="true">
+          <div className="relative w-full max-w-md mx-auto aspect-square" aria-hidden="true">
             <img
               src={rocketsLatam.url}
               alt=""
-              className="w-full h-auto block"
+              className="w-full h-full object-cover"
+              style={{
+                WebkitMaskImage:
+                  "radial-gradient(ellipse at center, black 45%, transparent 78%)",
+                maskImage:
+                  "radial-gradient(ellipse at center, black 45%, transparent 78%)",
+              }}
             />
           </div>
         </div>
