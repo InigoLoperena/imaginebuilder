@@ -515,17 +515,18 @@ function DilutionSection({ projects }: { projects: Project[] }) {
               <TableRow><TableHead>Miembro</TableHead><TableHead className="w-32 text-right">%</TableHead></TableRow>
             </TableHeader>
             <TableBody>
-              {participations.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>{nameOf(p.user_id)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{Number(p.percentage).toFixed(4)}%</TableCell>
+              {effective.map((r) => (
+                <TableRow key={r.user_id}>
+                  <TableCell>{nameOf(r.user_id)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.total.toFixed(4)}%</TableCell>
                 </TableRow>
               ))}
-              {participations.length === 0 && (
-                <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Sin participaciones. Añade el primer miembro para inicializar (usa 100%).</TableCell></TableRow>
+              {effective.length === 0 && (
+                <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Sin miembros. Asigna propiedad o registra horas primero.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
+
 
           <h3 className="font-semibold mt-8 mb-2 text-sm">Historial de diluciones</h3>
           <Table>
