@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 import teamArgentina from "@/assets/team-argentina-new.png.asset.json";
 import rocketsLatam from "@/assets/rockets-latam.jpg.asset.json";
+import imaginePie from "@/assets/imagine-pie.jpg.asset.json";
 import { useProjects } from "@/features/projects/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import {
