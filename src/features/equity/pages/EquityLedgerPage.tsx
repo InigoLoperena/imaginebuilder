@@ -19,15 +19,15 @@ export default function EquityLedgerPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Equity ledger</div>
-          <h1 className="text-2xl font-semibold">{project?.name ?? "Project"}</h1>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">Ledger de equity</div>
+          <h1 className="text-2xl font-semibold">{project?.name ?? "Proyecto"}</h1>
         </div>
         <Button variant="ghost" size="sm" asChild>
-          <Link to={`/app/projects/${id}/equity`}>← Back to dashboard</Link>
+          <Link to={`/app/projects/${id}/equity`}>← Volver al panel</Link>
         </Button>
       </div>
       <p className="text-sm text-muted-foreground">
-        Immutable, append-only record. {transactions.length} transactions.
+        Registro inmutable, solo se añaden filas. {transactions.length} transacciones.
       </p>
       <LedgerTable transactions={transactions} nameOf={nameOf} />
     </div>
