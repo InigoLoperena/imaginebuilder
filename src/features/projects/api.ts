@@ -8,6 +8,8 @@ export interface Project {
   website_url: string | null;
   pitch_deck_url: string | null;
   description: string | null;
+  visible_landing: boolean;
+  visible_internal: boolean;
   created_at: string;
 }
 
@@ -18,6 +20,8 @@ export type ProjectInput = {
   website_url?: string | null;
   pitch_deck_url?: string | null;
   description?: string | null;
+  visible_landing?: boolean;
+  visible_internal?: boolean;
 };
 
 export function useProjects() {
