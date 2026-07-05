@@ -372,6 +372,82 @@ export type Database = {
           },
         ]
       }
+      vb_participation_history: {
+        Row: {
+          added_user_id: string
+          after_state: Json
+          before_state: Json
+          created_at: string
+          id: string
+          percentage_added: number
+          performed_by: string
+          project_id: string
+        }
+        Insert: {
+          added_user_id: string
+          after_state: Json
+          before_state: Json
+          created_at?: string
+          id?: string
+          percentage_added: number
+          performed_by: string
+          project_id: string
+        }
+        Update: {
+          added_user_id?: string
+          after_state?: Json
+          before_state?: Json
+          created_at?: string
+          id?: string
+          percentage_added?: number
+          performed_by?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vb_participation_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vb_participations: {
+        Row: {
+          created_at: string
+          id: string
+          percentage: number
+          project_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          percentage: number
+          project_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          percentage?: number
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vb_participations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vb_projects: {
         Row: {
           created_at: string
@@ -522,6 +598,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      vb_add_member_with_dilution: {
+        Args: { _new_user_id: string; _percentage: number; _project_id: string }
+        Returns: Json
       }
     }
     Enums: {

@@ -103,3 +103,72 @@ export function useSetOverride() {
     onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ["vb_override", v.project_id] }),
   });
 }
+
+export interface Participation {
+  id: string;
+  project_id: string;
+  user_id: string;
+  percentage: number;
+}
+
+export interface ParticipationHistory {
+  id: string;
+  project_id: string;
+  added_user_id: string;
+  percentage_added: number;
+  before_state: { user_id: string; percentage: number }[];
+  after_state: { user_id: string; percentage: number }[];
+  performed_by: string;
+  created_at: string;
+}
+
+export function useParticipations(projectId?: string) {
+  return useQuery({
+    queryKey: ["vb_participations", projectId],
+    enabled: !!projectId,
+    queryFn: async (): Promise<Participation[]> => {
+      const { data, error } = await supabase
+        .from("vb_participations")
+        .select("*")
+        .eq("project_id", projectId!)
+        .order("percentage", { ascending: false });
+      if (error) throw error;
+      return data as Participation[];
+    },
+  });
+}
+
+export function useParticipationHistory(projectId?: string) {
+  return useQuery({
+    queryKey: ["vb_participation_history", projectId],
+    enabled: !!projectId,
+    queryFn: async (): Promise<ParticipationHistory[]> => {
+      const { data, error } = await supabase
+        .from("vb_participation_history")
+        .select("*")
+        .eq("project_id", projectId!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as unknown as ParticipationHistory[];
+    },
+  });
+}
+
+export function useAddMemberWithDilution() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (v: { project_id: string; user_id: string; percentage: number }) => {
+      const { data, error } = await supabase.rpc("vb_add_member_with_dilution", {
+        _project_id: v.project_id,
+        _new_user_id: v.user_id,
+        _percentage: v.percentage,
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_d, v) => {
+      qc.invalidateQueries({ queryKey: ["vb_participations", v.project_id] });
+      qc.invalidateQueries({ queryKey: ["vb_participation_history", v.project_id] });
+    },
+  });
+}

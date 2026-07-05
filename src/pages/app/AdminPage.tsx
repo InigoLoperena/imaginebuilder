@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, Project } from "@/features/projects/api";
-import { useProfiles, useProjectFixed, useSetFixed } from "@/features/ownership/api";
+import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, Profile, Participation } from "@/features/ownership/api";
 import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
@@ -44,6 +44,7 @@ export default function AdminPage() {
         <ProjectsSection projects={projects} />
         <UsersSection />
         <FixedSection projects={projects} selected={selectedProject} setSelected={setSelectedProject} />
+        <DilutionSection projects={projects} />
         <Card className="p-5">
           <h2 className="font-semibold mb-4">Todos los registros de tiempo</h2>
           <Table>
@@ -341,3 +342,202 @@ function FixedRow({ name, initial, onSave }: { name: string; initial: number; on
     </TableRow>
   );
 }
+
+function DilutionSection({ projects }: { projects: Project[] }) {
+  const { data: profiles = [] } = useProfiles();
+  const [projectId, setProjectId] = useState<string>("");
+  const { data: participations = [] } = useParticipations(projectId || undefined);
+  const { data: history = [] } = useParticipationHistory(projectId || undefined);
+  const addMember = useAddMemberWithDilution();
+
+  const [userId, setUserId] = useState<string>("");
+  const [pct, setPct] = useState<string>("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const nameOf = (uid: string) => {
+    const p = profiles.find((x) => x.id === uid);
+    return p?.full_name || p?.email || uid.slice(0, 8);
+  };
+
+  const total = participations.reduce((s, p) => s + Number(p.percentage), 0);
+
+  const P = parseFloat(pct);
+  const validPct = !Number.isNaN(P) && P > 0 && P < 100;
+  const factor = validPct ? 1 - P / 100 : 1;
+
+  const preview = participations
+    .filter((p) => p.user_id !== userId)
+    .map((p) => ({
+      user_id: p.user_id,
+      before: Number(p.percentage),
+      after: Number(p.percentage) * factor,
+    }));
+  const existingNew = participations.find((p) => p.user_id === userId);
+  if (userId) {
+    preview.push({
+      user_id: userId,
+      before: existingNew ? Number(existingNew.percentage) : 0,
+      after: validPct ? P : 0,
+    });
+  }
+  const totalAfter = preview.reduce((s, r) => s + r.after, 0);
+
+  const confirm = async () => {
+    if (!projectId || !userId || !validPct) return;
+    try {
+      await addMember.mutateAsync({ project_id: projectId, user_id: userId, percentage: P });
+      toast.success("Dilución aplicada");
+      setPreviewOpen(false);
+      setUserId("");
+      setPct("");
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  return (
+    <Card className="p-5">
+      <h2 className="font-semibold mb-1">Dilución proporcional de participaciones</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Al incorporar un nuevo miembro con un porcentaje P, todos los propietarios existentes se reducen mediante <code>nuevo = actual × (1 − P/100)</code>. El total siempre suma 100%.
+      </p>
+
+      <div className="grid md:grid-cols-3 gap-3 mb-4 max-w-3xl">
+        <div>
+          <Label>Proyecto</Label>
+          <Select value={projectId} onValueChange={setProjectId}>
+            <SelectTrigger><SelectValue placeholder="Elegir proyecto" /></SelectTrigger>
+            <SelectContent>
+              {projects.map((p) => (<SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Nuevo miembro</Label>
+          <Select value={userId} onValueChange={setUserId} disabled={!projectId}>
+            <SelectTrigger><SelectValue placeholder="Elegir miembro" /></SelectTrigger>
+            <SelectContent>
+              {profiles.map((p) => (<SelectItem key={p.id} value={p.id}>{p.full_name || p.email}</SelectItem>))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>% asignado</Label>
+          <Input
+            type="number"
+            step="0.01"
+            min="0.01"
+            max="99.99"
+            placeholder="Ej: 10"
+            value={pct}
+            onChange={(e) => setPct(e.target.value)}
+            disabled={!projectId}
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-2 mb-6">
+        <Button
+          onClick={() => setPreviewOpen(true)}
+          disabled={!projectId || !userId || !validPct}
+        >
+          Vista previa de dilución
+        </Button>
+        {projectId && (
+          <span className="text-sm text-muted-foreground self-center">
+            Total actual: <strong>{total.toFixed(4)}%</strong>
+          </span>
+        )}
+      </div>
+
+      {projectId && (
+        <>
+          <h3 className="font-semibold mb-2 text-sm">Participaciones vigentes</h3>
+          <Table>
+            <TableHeader>
+              <TableRow><TableHead>Miembro</TableHead><TableHead className="w-32 text-right">%</TableHead></TableRow>
+            </TableHeader>
+            <TableBody>
+              {participations.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell>{nameOf(p.user_id)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{Number(p.percentage).toFixed(4)}%</TableCell>
+                </TableRow>
+              ))}
+              {participations.length === 0 && (
+                <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Sin participaciones. Añade el primer miembro para inicializar (usa 100%).</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+
+          <h3 className="font-semibold mt-8 mb-2 text-sm">Historial de diluciones</h3>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Miembro añadido</TableHead>
+                <TableHead className="w-24 text-right">%</TableHead>
+                <TableHead>Ejecutado por</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {history.map((h) => (
+                <TableRow key={h.id}>
+                  <TableCell>{new Date(h.created_at).toLocaleString()}</TableCell>
+                  <TableCell>{nameOf(h.added_user_id)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{Number(h.percentage_added).toFixed(2)}%</TableCell>
+                  <TableCell>{nameOf(h.performed_by)}</TableCell>
+                </TableRow>
+              ))}
+              {history.length === 0 && (
+                <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">Sin historial</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </>
+      )}
+
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>Vista previa de la dilución</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Se añadirá a <strong>{nameOf(userId)}</strong> con un <strong>{validPct ? P.toFixed(2) : "0"}%</strong>.
+            Los propietarios existentes se reducen un <strong>{validPct ? (P).toFixed(2) : "0"}%</strong> proporcional.
+          </p>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Miembro</TableHead>
+                <TableHead className="text-right w-32">Antes</TableHead>
+                <TableHead className="text-right w-32">Después</TableHead>
+                <TableHead className="text-right w-32">Δ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {preview.map((r) => (
+                <TableRow key={r.user_id}>
+                  <TableCell>{nameOf(r.user_id)}{r.user_id === userId && <span className="ml-2 text-xs text-primary">(nuevo)</span>}</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.before.toFixed(4)}%</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.after.toFixed(4)}%</TableCell>
+                  <TableCell className={"text-right tabular-nums " + (r.after - r.before >= 0 ? "text-green-600" : "text-red-600")}>
+                    {(r.after - r.before >= 0 ? "+" : "") + (r.after - r.before).toFixed(4)}%
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <p className="text-xs text-muted-foreground">
+            Total tras dilución: <strong>{totalAfter.toFixed(4)}%</strong> (se ajusta automáticamente a 100,0000% al confirmar).
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="ghost" onClick={() => setPreviewOpen(false)}>Cancelar</Button>
+            <Button onClick={confirm} disabled={addMember.isPending}>
+              {addMember.isPending ? "Aplicando…" : "Confirmar y aplicar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </Card>
+  );
+}
+
