@@ -640,3 +640,129 @@ function VisibilitySection() {
     </Card>
   );
 }
+
+function ResetSection({ projects }: { projects: Project[] }) {
+  const [projectId, setProjectId] = useState<string>("");
+  const [note, setNote] = useState<string>("");
+  const { data: snapshots = [] } = useProjectSnapshots(projectId || undefined);
+  const reset = useResetProject();
+  const restore = useRestoreSnapshot();
+  const projectName = projects.find((p) => p.id === projectId)?.name ?? "";
+
+  const onReset = async () => {
+    if (!projectId) return;
+    try {
+      await reset.mutateAsync({ project_id: projectId, note: note || undefined });
+      toast.success("Proyecto reseteado. Se ha guardado un snapshot restaurable.");
+      setNote("");
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  const onRestore = async (snapshot_id: string) => {
+    try {
+      await restore.mutateAsync({ snapshot_id, project_id: projectId });
+      toast.success("Snapshot restaurado");
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  return (
+    <Card className="p-5 border-destructive/40">
+      <h2 className="font-semibold mb-1">Reset de contadores por proyecto</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Pone a cero <strong>horas registradas, transacciones de equity, participaciones, historial de dilución, propiedad fija y overrides</strong> del proyecto seleccionado. Antes de borrar se guarda un snapshot completo que puedes restaurar en cualquier momento.
+      </p>
+
+      <div className="grid md:grid-cols-3 gap-3 mb-4 max-w-3xl">
+        <div>
+          <Label>Proyecto</Label>
+          <Select value={projectId} onValueChange={setProjectId}>
+            <SelectTrigger><SelectValue placeholder="Elegir proyecto" /></SelectTrigger>
+            <SelectContent>
+              {projects.map((p) => (<SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="md:col-span-2">
+          <Label>Nota (opcional)</Label>
+          <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ej: reset antes de demo" disabled={!projectId} />
+        </div>
+      </div>
+
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" disabled={!projectId || reset.isPending}>
+            {reset.isPending ? "Reseteando…" : "Resetear contadores del proyecto"}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Seguro que quieres resetear "{projectName}"?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se pondrán a cero todas las horas, participaciones, propiedad y transacciones de equity de este proyecto. La acción es <strong>reversible</strong>: se creará un snapshot que podrás restaurar desde la lista de snapshots.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={onReset}>Sí, resetear</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {projectId && (
+        <div className="mt-6">
+          <h3 className="font-semibold mb-2 text-sm">Snapshots disponibles</h3>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Nota</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Acción</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {snapshots.map((s) => (
+                <TableRow key={s.id}>
+                  <TableCell>{new Date(s.created_at).toLocaleString()}</TableCell>
+                  <TableCell>{s.note || <span className="text-muted-foreground">—</span>}</TableCell>
+                  <TableCell>
+                    {s.restored
+                      ? <Badge variant="secondary">Restaurado {s.restored_at ? new Date(s.restored_at).toLocaleDateString() : ""}</Badge>
+                      : <Badge>Disponible</Badge>}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="outline" disabled={restore.isPending}>Restaurar</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Restaurar este snapshot?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            El estado actual del proyecto será reemplazado por el snapshot de {new Date(s.created_at).toLocaleString()}. Esta acción sobrescribe los datos actuales.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => onRestore(s.id)}>Sí, restaurar</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {snapshots.length === 0 && (
+                <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">Sin snapshots todavía</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </Card>
+  );
+}
+
