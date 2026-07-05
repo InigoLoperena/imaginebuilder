@@ -206,7 +206,7 @@ const LandingPage = () => {
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-tight">
               Equipo en Argentina, productos para el mundo.
             </h2>
-            <div className="rounded-2xl overflow-hidden card-glow aspect-[4/3] bg-card/40">
+            <div className="rounded-2xl overflow-hidden card-glow aspect-[3/4] bg-card/40">
               <img
                 src={teamArgentina.url}
                 alt="Equipo de Imagine trabajando en Argentina"
