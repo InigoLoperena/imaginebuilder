@@ -302,6 +302,27 @@ export type Database = {
         }
         Relationships: []
       }
+      vb_app_settings: {
+        Row: {
+          id: boolean
+          internal_projects_section_visible: boolean
+          landing_projects_section_visible: boolean
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          internal_projects_section_visible?: boolean
+          landing_projects_section_visible?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          internal_projects_section_visible?: boolean
+          landing_projects_section_visible?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       vb_fixed_ownership: {
         Row: {
           created_at: string
@@ -457,6 +478,8 @@ export type Database = {
           name: string
           pitch_deck_url: string | null
           updated_at: string
+          visible_internal: boolean
+          visible_landing: boolean
           website_url: string | null
         }
         Insert: {
@@ -467,6 +490,8 @@ export type Database = {
           name: string
           pitch_deck_url?: string | null
           updated_at?: string
+          visible_internal?: boolean
+          visible_landing?: boolean
           website_url?: string | null
         }
         Update: {
@@ -477,6 +502,8 @@ export type Database = {
           name?: string
           pitch_deck_url?: string | null
           updated_at?: string
+          visible_internal?: boolean
+          visible_landing?: boolean
           website_url?: string | null
         }
         Relationships: []
