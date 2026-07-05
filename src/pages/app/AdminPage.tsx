@@ -563,3 +563,44 @@ function DilutionSection({ projects }: { projects: Project[] }) {
   );
 }
 
+
+function VisibilitySection() {
+  const { data: settings } = useAppSettings();
+  const update = useUpdateAppSettings();
+  return (
+    <Card className="p-5">
+      <h2 className="font-semibold mb-1">Visibilidad de la sección "Proyectos"</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Controla si la sección completa aparece en la landing pública y en el panel interno de los miembros. La visibilidad por proyecto se ajusta en la tarjeta de cada uno.
+      </p>
+      <div className="space-y-3 max-w-md">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium">Landing pública</div>
+            <div className="text-xs text-muted-foreground">Sección "En lo que estamos trabajando"</div>
+          </div>
+          <Switch
+            checked={settings?.landing_projects_section_visible ?? true}
+            onCheckedChange={(v) => update.mutate({ landing_projects_section_visible: v }, {
+              onSuccess: () => toast.success("Actualizado"),
+              onError: (e) => toast.error((e as Error).message),
+            })}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium">Panel interno (miembros)</div>
+            <div className="text-xs text-muted-foreground">Listado de proyectos dentro del Venture Builder</div>
+          </div>
+          <Switch
+            checked={settings?.internal_projects_section_visible ?? true}
+            onCheckedChange={(v) => update.mutate({ internal_projects_section_visible: v }, {
+              onSuccess: () => toast.success("Actualizado"),
+              onError: (e) => toast.error((e as Error).message),
+            })}
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}
