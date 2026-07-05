@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects, useUpsertProject, useDeleteProject, uploadProjectLogo, useToggleProjectVisibility, useAppSettings, useUpdateAppSettings, Project } from "@/features/projects/api";
-import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, Profile, Participation } from "@/features/ownership/api";
-import { useAllEntries, useDeleteEntry } from "@/features/timesheet/api";
+import { useProfiles, useProjectFixed, useSetFixed, useParticipations, useParticipationHistory, useAddMemberWithDilution, useProjectOverrides, useProjectSnapshots, useResetProject, useRestoreSnapshot, Profile, Participation } from "@/features/ownership/api";
+import { calculateOwnership } from "@/features/ownership/calculateOwnership";
+import { useAllEntries, useDeleteEntry, useProjectEntries } from "@/features/timesheet/api";
 import { useUpdateHourStatus } from "@/features/equity/api";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
 import { Badge } from "@/components/ui/badge";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
@@ -56,6 +59,8 @@ export default function AdminPage() {
         <UsersSection />
         <FixedSection projects={projects} selected={selectedProject} setSelected={setSelectedProject} />
         <DilutionSection projects={projects} />
+        <ResetSection projects={projects} />
+
         <Card className="p-5">
           <h2 className="font-semibold mb-4">Todos los registros de tiempo</h2>
           <Table>
@@ -395,6 +400,9 @@ function DilutionSection({ projects }: { projects: Project[] }) {
   const [projectId, setProjectId] = useState<string>("");
   const { data: participations = [] } = useParticipations(projectId || undefined);
   const { data: history = [] } = useParticipationHistory(projectId || undefined);
+  const { data: fixed = [] } = useProjectFixed(projectId || undefined);
+  const { data: overrides = [] } = useProjectOverrides(projectId || undefined);
+  const { data: entries = [] } = useProjectEntries(projectId || undefined);
   const addMember = useAddMemberWithDilution();
 
   const [userId, setUserId] = useState<string>("");
@@ -406,24 +414,25 @@ function DilutionSection({ projects }: { projects: Project[] }) {
     return p?.full_name || p?.email || uid.slice(0, 8);
   };
 
-  const total = participations.reduce((s, p) => s + Number(p.percentage), 0);
+  // Effective ownership from the real cap table (fixed + variable-by-hours + overrides)
+  const effective = useMemo(
+    () => calculateOwnership(profiles, entries, fixed, overrides),
+    [profiles, entries, fixed, overrides]
+  );
+  const total = effective.reduce((s, r) => s + r.total, 0);
 
   const P = parseFloat(pct);
   const validPct = !Number.isNaN(P) && P > 0 && P < 100;
   const factor = validPct ? 1 - P / 100 : 1;
 
-  const preview = participations
-    .filter((p) => p.user_id !== userId)
-    .map((p) => ({
-      user_id: p.user_id,
-      before: Number(p.percentage),
-      after: Number(p.percentage) * factor,
-    }));
-  const existingNew = participations.find((p) => p.user_id === userId);
+  const preview = effective
+    .filter((r) => r.user_id !== userId)
+    .map((r) => ({ user_id: r.user_id, before: r.total, after: r.total * factor }));
+  const existingNew = effective.find((r) => r.user_id === userId);
   if (userId) {
     preview.push({
       user_id: userId,
-      before: existingNew ? Number(existingNew.percentage) : 0,
+      before: existingNew ? existingNew.total : 0,
       after: validPct ? P : 0,
     });
   }
@@ -441,6 +450,7 @@ function DilutionSection({ projects }: { projects: Project[] }) {
       toast.error((e as Error).message);
     }
   };
+
 
   return (
     <Card className="p-5">
@@ -505,17 +515,18 @@ function DilutionSection({ projects }: { projects: Project[] }) {
               <TableRow><TableHead>Miembro</TableHead><TableHead className="w-32 text-right">%</TableHead></TableRow>
             </TableHeader>
             <TableBody>
-              {participations.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>{nameOf(p.user_id)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{Number(p.percentage).toFixed(4)}%</TableCell>
+              {effective.map((r) => (
+                <TableRow key={r.user_id}>
+                  <TableCell>{nameOf(r.user_id)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.total.toFixed(4)}%</TableCell>
                 </TableRow>
               ))}
-              {participations.length === 0 && (
-                <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Sin participaciones. Añade el primer miembro para inicializar (usa 100%).</TableCell></TableRow>
+              {effective.length === 0 && (
+                <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Sin miembros. Asigna propiedad o registra horas primero.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
+
 
           <h3 className="font-semibold mt-8 mb-2 text-sm">Historial de diluciones</h3>
           <Table>
@@ -629,3 +640,129 @@ function VisibilitySection() {
     </Card>
   );
 }
+
+function ResetSection({ projects }: { projects: Project[] }) {
+  const [projectId, setProjectId] = useState<string>("");
+  const [note, setNote] = useState<string>("");
+  const { data: snapshots = [] } = useProjectSnapshots(projectId || undefined);
+  const reset = useResetProject();
+  const restore = useRestoreSnapshot();
+  const projectName = projects.find((p) => p.id === projectId)?.name ?? "";
+
+  const onReset = async () => {
+    if (!projectId) return;
+    try {
+      await reset.mutateAsync({ project_id: projectId, note: note || undefined });
+      toast.success("Proyecto reseteado. Se ha guardado un snapshot restaurable.");
+      setNote("");
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  const onRestore = async (snapshot_id: string) => {
+    try {
+      await restore.mutateAsync({ snapshot_id, project_id: projectId });
+      toast.success("Snapshot restaurado");
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  return (
+    <Card className="p-5 border-destructive/40">
+      <h2 className="font-semibold mb-1">Reset de contadores por proyecto</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Pone a cero <strong>horas registradas, transacciones de equity, participaciones, historial de dilución, propiedad fija y overrides</strong> del proyecto seleccionado. Antes de borrar se guarda un snapshot completo que puedes restaurar en cualquier momento.
+      </p>
+
+      <div className="grid md:grid-cols-3 gap-3 mb-4 max-w-3xl">
+        <div>
+          <Label>Proyecto</Label>
+          <Select value={projectId} onValueChange={setProjectId}>
+            <SelectTrigger><SelectValue placeholder="Elegir proyecto" /></SelectTrigger>
+            <SelectContent>
+              {projects.map((p) => (<SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="md:col-span-2">
+          <Label>Nota (opcional)</Label>
+          <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ej: reset antes de demo" disabled={!projectId} />
+        </div>
+      </div>
+
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" disabled={!projectId || reset.isPending}>
+            {reset.isPending ? "Reseteando…" : "Resetear contadores del proyecto"}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Seguro que quieres resetear "{projectName}"?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se pondrán a cero todas las horas, participaciones, propiedad y transacciones de equity de este proyecto. La acción es <strong>reversible</strong>: se creará un snapshot que podrás restaurar desde la lista de snapshots.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={onReset}>Sí, resetear</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {projectId && (
+        <div className="mt-6">
+          <h3 className="font-semibold mb-2 text-sm">Snapshots disponibles</h3>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Nota</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Acción</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {snapshots.map((s) => (
+                <TableRow key={s.id}>
+                  <TableCell>{new Date(s.created_at).toLocaleString()}</TableCell>
+                  <TableCell>{s.note || <span className="text-muted-foreground">—</span>}</TableCell>
+                  <TableCell>
+                    {s.restored
+                      ? <Badge variant="secondary">Restaurado {s.restored_at ? new Date(s.restored_at).toLocaleDateString() : ""}</Badge>
+                      : <Badge>Disponible</Badge>}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="outline" disabled={restore.isPending}>Restaurar</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Restaurar este snapshot?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            El estado actual del proyecto será reemplazado por el snapshot de {new Date(s.created_at).toLocaleString()}. Esta acción sobrescribe los datos actuales.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => onRestore(s.id)}>Sí, restaurar</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {snapshots.length === 0 && (
+                <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">Sin snapshots todavía</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </Card>
+  );
+}
+

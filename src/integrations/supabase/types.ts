@@ -595,6 +595,47 @@ export type Database = {
           },
         ]
       }
+      vb_project_snapshots: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          project_id: string
+          restored: boolean
+          restored_at: string | null
+          snapshot: Json
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          project_id: string
+          restored?: boolean
+          restored_at?: string | null
+          snapshot: Json
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          project_id?: string
+          restored?: boolean
+          restored_at?: string | null
+          snapshot?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vb_project_snapshots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "vb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vb_projects: {
         Row: {
           created_at: string
@@ -823,6 +864,18 @@ export type Database = {
       vb_add_member_with_dilution: {
         Args: { _new_user_id: string; _percentage: number; _project_id: string }
         Returns: Json
+      }
+      vb_build_project_snapshot: {
+        Args: { _project_id: string }
+        Returns: Json
+      }
+      vb_reset_project: {
+        Args: { _note?: string; _project_id: string }
+        Returns: string
+      }
+      vb_restore_project_snapshot: {
+        Args: { _snapshot_id: string }
+        Returns: undefined
       }
     }
     Enums: {
