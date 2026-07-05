@@ -143,7 +143,10 @@ const SixSlicePie = () => {
 };
 
 const LandingPage = () => {
-  const { data: projects = [] } = useProjects();
+  const { data: allProjects = [] } = useProjects();
+  const { data: settings } = useAppSettings();
+  const sectionVisible = settings?.landing_projects_section_visible ?? true;
+  const projects = allProjects.filter((p) => p.visible_landing);
   return (
     <main className="min-h-screen text-foreground">
       {/* HERO */}
