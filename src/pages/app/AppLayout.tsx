@@ -16,6 +16,9 @@ export default function AppLayout() {
             Venture Builder
           </Link>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/app/me/equity">My equity</Link>
+            </Button>
             <span className="text-sm text-muted-foreground hidden sm:inline">{user?.email}</span>
             {isAdmin && (
               <Button variant="outline" size="sm" onClick={() => navigate("/Venturebuilder")}>
