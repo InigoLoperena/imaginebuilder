@@ -45,7 +45,7 @@ export function OwnershipPie({
   const remaining = Math.max(0, Number((100 - assigned).toFixed(2)));
   if (remaining > 0.01) {
     data.push({
-      name: "Pool variable disponible (sin asignar)",
+      name: poolLabel,
       value: remaining,
       fill: "hsl(var(--muted))",
     });
