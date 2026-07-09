@@ -1,6 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
+const DEFAULT_PASSWORD = "1234";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -29,18 +31,19 @@ Deno.serve(async (req) => {
     const { action, email, password, full_name, user_id } = body ?? {};
 
     if (action === "create") {
-      if (!email || !password) return json({ error: "email/password required" }, 400);
+      if (!email) return json({ error: "email required" }, 400);
+      const pwd = (password && String(password).length > 0) ? String(password) : DEFAULT_PASSWORD;
       const { data, error } = await admin.auth.admin.createUser({
         email,
-        password,
+        password: pwd,
         email_confirm: true,
-        user_metadata: { full_name },
+        user_metadata: { full_name, must_change_password: true },
       });
       if (error) return json({ error: error.message }, 400);
       if (full_name) {
         await admin.from("profiles").update({ full_name }).eq("id", data.user.id);
       }
-      return json({ user: data.user });
+      return json({ user: data.user, default_password: pwd });
     }
 
     if (action === "delete") {
@@ -54,8 +57,13 @@ Deno.serve(async (req) => {
       if (!user_id) return json({ error: "user_id required" }, 400);
       const patch: Record<string, unknown> = {};
       if (email) patch.email = email;
-      if (password) patch.password = password;
-      if (full_name !== undefined) patch.user_metadata = { full_name };
+      if (password) {
+        patch.password = password;
+        // Admin reset password → force user to change on next login
+        patch.user_metadata = { full_name, must_change_password: true };
+      } else if (full_name !== undefined) {
+        patch.user_metadata = { full_name };
+      }
       const { error } = await admin.auth.admin.updateUserById(user_id, patch);
       if (error) return json({ error: error.message }, 400);
       if (full_name !== undefined) {

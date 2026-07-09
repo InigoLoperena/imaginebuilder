@@ -256,8 +256,8 @@ function UsersSection() {
       if (editingId) {
         await call("update", { user_id: editingId, email: email || undefined, password: password || undefined, full_name: name });
       } else {
-        if (!email || !password) throw new Error("Email y contraseña requeridos");
-        await call("create", { email, password, full_name: name });
+        if (!email) throw new Error("Email requerido");
+        await call("create", { email, password: password || undefined, full_name: name });
       }
       toast.success("Guardado");
       setOpen(false);
@@ -294,8 +294,13 @@ function UsersSection() {
               <div><Label>Nombre</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
               <div><Label>Email</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
               <div>
-                <Label>Contraseña {editingId && "(dejar vacío para no cambiar)"}</Label>
-                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Label>Contraseña {editingId ? "(dejar vacío para no cambiar)" : "(opcional, por defecto 1234)"}</Label>
+                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={editingId ? "" : "1234"} />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {editingId
+                    ? "Si la cambias, el usuario deberá establecer una nueva al entrar."
+                    : "El usuario tendrá que establecer su propia contraseña al iniciar sesión por primera vez."}
+                </p>
               </div>
               <Button onClick={save} disabled={busy} className="w-full">{busy ? "Guardando…" : "Guardar"}</Button>
             </div>
