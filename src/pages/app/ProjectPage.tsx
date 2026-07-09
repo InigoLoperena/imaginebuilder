@@ -12,6 +12,7 @@ import {
 import { useProjectFixed, useProfiles, useProjectOverrides } from "@/features/ownership/api";
 import { calculateOwnership } from "@/features/ownership/calculateOwnership";
 import { OwnershipPie } from "@/features/ownership/OwnershipPie";
+import { useActivePolicy } from "@/features/equity/api";
 import { OwnershipTable } from "@/features/ownership/OwnershipTable";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
@@ -51,6 +52,7 @@ export default function ProjectPage() {
   const { data: entries = [] } = useProjectEntries(id);
   const { data: fixed = [] } = useProjectFixed(id);
   const { data: overrides = [] } = useProjectOverrides(id);
+  const { data: activePolicy } = useActivePolicy(id);
   
   
   const { data: profiles = [] } = useProfiles();
@@ -240,7 +242,7 @@ export default function ProjectPage() {
 
         <Card className="p-5">
           <h2 className="font-semibold mb-4">Propiedad</h2>
-          <OwnershipPie rows={rows} />
+          <OwnershipPie rows={rows} equityModel={activePolicy?.type ?? project.equity_model} />
         </Card>
       </div>
 

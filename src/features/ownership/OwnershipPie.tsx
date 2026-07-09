@@ -1,7 +1,19 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { OwnershipRow, OWNERSHIP_COLORS } from "@/features/ownership/calculateOwnership";
 
-export function OwnershipPie({ rows }: { rows: OwnershipRow[] }) {
+export type EquityModelLabel = "dynamic_pool" | "fixed_conversion" | null | undefined;
+
+export function OwnershipPie({
+  rows,
+  equityModel,
+}: {
+  rows: OwnershipRow[];
+  equityModel?: EquityModelLabel;
+}) {
+  const poolLabel =
+    equityModel === "fixed_conversion"
+      ? "Conversión fija de horas (disponible)"
+      : "Pool de horas variable (disponible)";
   const data: { name: string; value: number; fill: string }[] = [];
   rows.forEach((r, i) => {
     const base = OWNERSHIP_COLORS[i % OWNERSHIP_COLORS.length];
@@ -33,7 +45,7 @@ export function OwnershipPie({ rows }: { rows: OwnershipRow[] }) {
   const remaining = Math.max(0, Number((100 - assigned).toFixed(2)));
   if (remaining > 0.01) {
     data.push({
-      name: "Pool variable disponible (sin asignar)",
+      name: poolLabel,
       value: remaining,
       fill: "hsl(var(--muted))",
     });
