@@ -12,6 +12,7 @@ import {
 import { useProjectFixed, useProfiles, useProjectOverrides } from "@/features/ownership/api";
 import { calculateOwnership } from "@/features/ownership/calculateOwnership";
 import { OwnershipPie } from "@/features/ownership/OwnershipPie";
+import { useActivePolicy } from "@/features/equity/api";
 import { OwnershipTable } from "@/features/ownership/OwnershipTable";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
 import { Card } from "@/components/ui/card";
