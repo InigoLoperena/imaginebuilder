@@ -242,7 +242,7 @@ export default function ProjectPage() {
 
         <Card className="p-5">
           <h2 className="font-semibold mb-4">Propiedad</h2>
-          <OwnershipPie rows={rows} />
+          <OwnershipPie rows={rows} equityModel={activePolicy?.type ?? project.equity_model} />
         </Card>
       </div>
 
