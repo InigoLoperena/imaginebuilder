@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const NEW_PASSWORD = "Greenhuntshared.";
+const NEW_PASSWORD = "1234";
 const SKIP_EMAIL = "inigoloperena@gmail.com";
 
 Deno.serve(async (req) => {
@@ -22,7 +22,10 @@ Deno.serve(async (req) => {
           results.push({ email: u.email, skipped: true });
           continue;
         }
-        const { error: uErr } = await admin.auth.admin.updateUserById(u.id, { password: NEW_PASSWORD });
+        const { error: uErr } = await admin.auth.admin.updateUserById(u.id, {
+          password: NEW_PASSWORD,
+          user_metadata: { ...(u.user_metadata ?? {}), must_change_password: true },
+        });
         results.push({ email: u.email, ok: !uErr, error: uErr?.message });
       }
       if (data.users.length < 200) break;
