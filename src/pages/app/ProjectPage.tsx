@@ -52,6 +52,7 @@ export default function ProjectPage() {
   const { data: entries = [] } = useProjectEntries(id);
   const { data: fixed = [] } = useProjectFixed(id);
   const { data: overrides = [] } = useProjectOverrides(id);
+  const { data: activePolicy } = useActivePolicy(id);
   
   
   const { data: profiles = [] } = useProfiles();
