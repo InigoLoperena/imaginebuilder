@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const NEW_PASSWORD = "1234";
+const NEW_PASSWORD = "123456";
 const SKIP_EMAIL = "inigoloperena@gmail.com";
 
 Deno.serve(async (req) => {
