@@ -231,7 +231,6 @@ function UsersSection() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -245,19 +244,26 @@ function UsersSection() {
     return data;
   };
 
-  const openNew = () => { setEditingId(null); setEmail(""); setPassword(""); setName(""); setOpen(true); };
-  const openEdit = (p: { id: string; full_name: string | null; email: string | null }) => {
-    setEditingId(p.id); setEmail(p.email ?? ""); setPassword(""); setName(p.full_name ?? ""); setOpen(true);
+  const slugify = (s: string) =>
+    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "").slice(0, 40);
+
+  const openNew = () => { setEditingId(null); setPassword(""); setName(""); setOpen(true); };
+  const openEdit = (p: { id: string; full_name: string | null }) => {
+    setEditingId(p.id); setPassword(""); setName(p.full_name ?? ""); setOpen(true);
   };
 
   const save = async () => {
     setBusy(true);
     try {
+      const uname = name.trim();
+      if (!uname) throw new Error("Nombre de usuario requerido");
       if (editingId) {
-        await call("update", { user_id: editingId, email: email || undefined, password: password || undefined, full_name: name });
+        await call("update", { user_id: editingId, password: password || undefined, full_name: uname });
       } else {
-        if (!email) throw new Error("Email requerido");
-        await call("create", { email, password: password || undefined, full_name: name });
+        const slug = slugify(uname);
+        if (!slug) throw new Error("Nombre inválido");
+        const email = `${slug}@imagine.local`;
+        await call("create", { email, password: password || undefined, full_name: uname });
       }
       toast.success("Guardado");
       setOpen(false);
@@ -291,8 +297,11 @@ function UsersSection() {
           <DialogContent>
             <DialogHeader><DialogTitle>{editingId ? "Editar" : "Nuevo"} usuario</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Nombre</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
-              <div><Label>Email</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+              <div>
+                <Label>Nombre de usuario</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Andrea" />
+                <p className="text-xs text-muted-foreground mt-1">Este será el nombre con el que iniciará sesión.</p>
+              </div>
               <div>
                 <Label>Contraseña {editingId ? "(dejar vacío para no cambiar)" : "(opcional, por defecto 1234)"}</Label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={editingId ? "" : "1234"} />
@@ -309,13 +318,12 @@ function UsersSection() {
       </div>
       <Table>
         <TableHeader>
-          <TableRow><TableHead>Nombre</TableHead><TableHead>Email</TableHead><TableHead></TableHead></TableRow>
+          <TableRow><TableHead>Nombre de usuario</TableHead><TableHead></TableHead></TableRow>
         </TableHeader>
         <TableBody>
           {profiles.map((p) => (
             <TableRow key={p.id}>
               <TableCell>{p.full_name}</TableCell>
-              <TableCell>{p.email}</TableCell>
               <TableCell className="text-right">
                 <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
                 <Button variant="ghost" size="icon" onClick={() => remove(p.id)}><Trash2 className="h-4 w-4" /></Button>
