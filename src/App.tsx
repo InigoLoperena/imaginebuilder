@@ -23,6 +23,7 @@ const ProjectEquityPage = lazy(() => import("./features/equity/pages/ProjectEqui
 const EquityLedgerPage = lazy(() => import("./features/equity/pages/EquityLedgerPage"));
 const MyEquityPage = lazy(() => import("./features/equity/pages/MyEquityPage"));
 const HowItWorksPage = lazy(() => import("./pages/app/HowItWorksPage"));
+const ChangePasswordPage = lazy(() => import("./pages/app/ChangePasswordPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +53,7 @@ const App = () => (
                   <Route path="/cookies" element={<LegalPage />} />
                   <Route path="/aviso-legal" element={<LegalPage />} />
                   <Route path="/login" element={<LoginPage />} />
+                  <Route path="/app/cambiar-contrasena" element={<ChangePasswordPage />} />
                   <Route path="/app" element={<RequireAuth><AppLayout /></RequireAuth>}>
                     <Route index element={<DashboardPage />} />
                     <Route path="me/equity" element={<MyEquityPage />} />
