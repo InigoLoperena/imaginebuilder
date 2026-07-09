@@ -12,7 +12,7 @@ export default function LoginPage() {
   const { user, loading, signIn } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -25,21 +25,21 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      const value = identifier.trim();
-      let email = value;
-      if (!value.includes("@")) {
-        const { data, error } = await supabase.functions.invoke("resolve-login", {
-          body: { identifier: value },
-        });
-        if (error || !data?.email) {
-          toast.error("Usuario no encontrado");
-          return;
-        }
-        email = data.email as string;
+      const value = username.trim();
+      if (!value) {
+        toast.error("Introduce tu nombre de usuario");
+        return;
       }
-      const { error } = await signIn(email, password);
+      const { data, error: rErr } = await supabase.functions.invoke("resolve-login", {
+        body: { identifier: value },
+      });
+      if (rErr || !data?.email) {
+        toast.error("Usuario o contraseña incorrectos");
+        return;
+      }
+      const { error } = await signIn(data.email as string, password);
       if (error) {
-        toast.error(error);
+        toast.error("Usuario o contraseña incorrectos");
         return;
       }
       navigate("/app", { replace: true });
@@ -55,15 +55,15 @@ export default function LoginPage() {
         <p className="text-sm text-muted-foreground mb-6">Venture Builder</p>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="identifier">Nombre o email</Label>
+            <Label htmlFor="username">Nombre de usuario</Label>
             <Input
-              id="identifier"
+              id="username"
               type="text"
               required
               autoComplete="username"
-              placeholder="Andrea o andrea@imagine.local"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Andrea"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div>
@@ -72,6 +72,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               required
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
