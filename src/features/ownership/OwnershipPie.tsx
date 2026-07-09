@@ -29,6 +29,16 @@ export function OwnershipPie({ rows }: { rows: OwnershipRow[] }) {
     }
   });
 
+  const assigned = data.reduce((s, d) => s + d.value, 0);
+  const remaining = Math.max(0, Number((100 - assigned).toFixed(2)));
+  if (remaining > 0.01) {
+    data.push({
+      name: "Pool variable disponible (sin asignar)",
+      value: remaining,
+      fill: "hsl(var(--muted))",
+    });
+  }
+
   if (data.length === 0) {
     return <div className="text-sm text-muted-foreground">Sin datos de propiedad todavía.</div>;
   }
