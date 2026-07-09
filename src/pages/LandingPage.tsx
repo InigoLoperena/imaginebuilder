@@ -1,9 +1,13 @@
-import { Link } from "react-router-dom";
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import imagineLogo from "@/assets/imagine-logo-transparent.png.asset.json";
 import teamArgentina from "@/assets/team-argentina-new.png.asset.json";
 import rocketsLatam from "@/assets/rockets-latam.jpg.asset.json";
 import { useProjects, useAppSettings } from "@/features/projects/api";
 import { ProjectLogo } from "@/features/projects/ProjectLogo";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   Lightbulb,
   Users,
@@ -62,6 +66,71 @@ const FeatureCard = ({
     <p className="text-muted-foreground leading-relaxed">{children}</p>
   </div>
 );
+
+const HeaderLoginForm = () => {
+  const { user, signIn } = useAuth();
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    const value = username.trim();
+    if (!value) return toast.error("Introduce tu usuario");
+    setBusy(true);
+    try {
+      const { data, error: resolveError } = await supabase.functions.invoke("resolve-login", {
+        body: { identifier: value },
+      });
+      if (resolveError || !data?.email) return toast.error("Usuario o contraseña incorrectos");
+      const { error } = await signIn(data.email as string, password);
+      if (error) return toast.error("Usuario o contraseña incorrectos");
+      navigate("/app", { replace: true });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (user) {
+    return (
+      <button
+        type="button"
+        onClick={() => navigate("/app")}
+        className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition"
+      >
+        Entrar al sistema
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="hidden lg:flex items-center gap-2" aria-label="Login rápido">
+      <input
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Usuario"
+        autoComplete="username"
+        className="h-9 w-28 rounded-md border border-border bg-background/70 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/60"
+      />
+      <input
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Contraseña"
+        type="password"
+        autoComplete="current-password"
+        className="h-9 w-28 rounded-md border border-border bg-background/70 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/60"
+      />
+      <button
+        type="submit"
+        disabled={busy}
+        className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition disabled:opacity-60"
+      >
+        {busy ? "..." : "Entrar"}
+      </button>
+    </form>
+  );
+};
 
 // Floating orbital illustration in brand colors
 const FloatingOrbits = () => (
@@ -157,13 +226,16 @@ const LandingPage = () => {
             alt="Imagine"
             className="h-36 md:h-40 w-auto"
           />
-          <div className="hidden md:flex gap-8 text-sm uppercase tracking-widest text-muted-foreground">
-            <a href="#tesis" className="hover:text-cyan-accent transition">Tesis</a>
-            <a href="#ventajas" className="hover:text-cyan-accent transition">Ventajas</a>
-            <a href="#slicing-pie" className="hover:text-cyan-accent transition">Slicing Pie</a>
-            {sectionVisible && <a href="#proyectos" className="hover:text-cyan-accent transition">Proyectos</a>}
-            <a href="#gobernanza" className="hover:text-cyan-accent transition">Gobernanza</a>
-            <a href="#sistema" className="hover:text-cyan-accent transition">Sistema</a>
+          <div className="flex items-center gap-4">
+            <div className="hidden 2xl:flex gap-6 text-sm uppercase tracking-widest text-muted-foreground">
+              <a href="#tesis" className="hover:text-cyan-accent transition">Tesis</a>
+              <a href="#ventajas" className="hover:text-cyan-accent transition">Ventajas</a>
+              <a href="#slicing-pie" className="hover:text-cyan-accent transition">Slicing Pie</a>
+              {sectionVisible && <a href="#proyectos" className="hover:text-cyan-accent transition">Proyectos</a>}
+              <a href="#gobernanza" className="hover:text-cyan-accent transition">Gobernanza</a>
+              <a href="#sistema" className="hover:text-cyan-accent transition">Sistema</a>
+            </div>
+            <HeaderLoginForm />
           </div>
         </nav>
 

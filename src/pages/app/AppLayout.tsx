@@ -34,7 +34,9 @@ export default function AppLayout() {
           </nav>
 
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-sm text-muted-foreground hidden lg:inline">{user?.email}</span>
+            <span className="text-sm text-muted-foreground hidden lg:inline">
+              {(user?.user_metadata as { full_name?: string } | undefined)?.full_name ?? "Usuario"}
+            </span>
             {isAdmin && (
               <Button variant="outline" size="sm" onClick={() => navigate("/Venturebuilder")}>
                 <Shield className="h-4 w-4 mr-1" /> Admin

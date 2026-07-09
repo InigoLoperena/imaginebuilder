@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const DEFAULT_PASSWORD = "1234";
+const DEFAULT_PASSWORD = "123456";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -32,7 +32,8 @@ Deno.serve(async (req) => {
 
     if (action === "create") {
       if (!email) return json({ error: "email required" }, 400);
-      const pwd = (password && String(password).length > 0) ? String(password) : DEFAULT_PASSWORD;
+      const requestedPwd = (password && String(password).length > 0) ? String(password) : DEFAULT_PASSWORD;
+      const pwd = requestedPwd === "1234" ? DEFAULT_PASSWORD : requestedPwd;
       const { data, error } = await admin.auth.admin.createUser({
         email,
         password: pwd,
@@ -58,7 +59,7 @@ Deno.serve(async (req) => {
       const patch: Record<string, unknown> = {};
       if (email) patch.email = email;
       if (password) {
-        patch.password = password;
+        patch.password = String(password) === "1234" ? DEFAULT_PASSWORD : password;
         // Admin reset password → force user to change on next login
         patch.user_metadata = { full_name, must_change_password: true };
       } else if (full_name !== undefined) {
