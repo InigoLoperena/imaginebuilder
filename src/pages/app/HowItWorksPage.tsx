@@ -19,10 +19,10 @@ export default function HowItWorksPage() {
       <Card className="p-6 space-y-3">
         <h2 className="text-xl font-semibold">Propiedad fija</h2>
         <p className="text-sm text-muted-foreground">
-          La propiedad fija se puede asignar con porcentajes de propiedad (X %) u otros criterios
-          aprobados previamente; por ejemplo: alguien que ha aportado algo estratégico al proyecto,
-          como la idea, un MVP o una comunidad en redes sociales, y los miembros acuerdan que el 20%
-          del proyecto sea de su propiedad.
+          La propiedad fija se puede asignar con porcentajes de propiedad (X %) mediante
+          cualquier criterio aprobado por votación, por ejemplo: alguien que ha aportado algo
+          estratégico al proyecto, como la idea, un MVP o una comunidad en redes sociales, y
+          los miembros acuerdan que el 20% del proyecto sea de su propiedad.
         </p>
       </Card>
 
