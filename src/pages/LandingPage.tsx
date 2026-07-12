@@ -92,26 +92,14 @@ const HeaderLoginForm = () => {
     }
   };
 
-  if (user) {
-    return (
-      <button
-        type="button"
-        onClick={() => navigate("/app")}
-        className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition"
-      >
-        Entrar al sistema
-      </button>
-    );
-  }
-
   return (
-    <form onSubmit={submit} className="hidden lg:flex items-center gap-2" aria-label="Login rápido">
+    <form onSubmit={submit} className="flex items-center gap-2" aria-label="Login rápido">
       <input
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Usuario"
         autoComplete="username"
-        className="h-9 w-28 rounded-md border border-border bg-background/70 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/60"
+        className="h-9 w-24 md:w-28 rounded-md border border-border bg-background/70 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/60"
       />
       <input
         value={password}
@@ -119,7 +107,7 @@ const HeaderLoginForm = () => {
         placeholder="Contraseña"
         type="password"
         autoComplete="current-password"
-        className="h-9 w-28 rounded-md border border-border bg-background/70 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/60"
+        className="h-9 w-24 md:w-28 rounded-md border border-border bg-background/70 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/60"
       />
       <button
         type="submit"
@@ -131,6 +119,7 @@ const HeaderLoginForm = () => {
     </form>
   );
 };
+
 
 // Floating orbital illustration in brand colors
 const FloatingOrbits = () => (
