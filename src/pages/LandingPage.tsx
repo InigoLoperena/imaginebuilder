@@ -233,10 +233,10 @@ const LandingPage = () => {
             <p className="text-cyan-accent uppercase tracking-[0.4em] text-sm md:text-base font-medium mb-8">
               Venture Builder Cooperativo
             </p>
-            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl leading-[1.05] max-w-4xl mb-10">
-              Construimos productos digitales{" "}
-              <span className="font-script text-cyan-accent">imaginando y colaborando</span>{" "}
-              juntos, alineando intereses, sin la presión del dinero.
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] max-w-5xl mb-10">
+              Construimos y lanzamos soluciones digitales{" "}
+              <span className="font-script text-cyan-accent">imaginando, diseñando y colaborando</span>{" "}
+              entre personas o entidades, alineando intereses y aportando recursos estrátegicos no monetarios, minimizando la presión del dinero que mata los proyectos.
             </h1>
             <blockquote className="border-l-2 border-cyan-accent/60 pl-5 italic text-lg md:text-xl text-muted-foreground max-w-2xl">
               "Imagination is more important than knowledge"
@@ -320,8 +320,8 @@ const LandingPage = () => {
             <p>
               Las personas y empresas que participan en los proyectos aportan{" "}
               <span className="text-foreground font-medium">trabajo</span> u otros
-              recursos estratégicos como software o comunidades en redes sociales a cambio de{" "}
-              <span className="text-foreground font-medium">propiedad</span> sobre
+              recursos estratégicos a cambio de una parte de la{" "}
+              <span className="text-foreground font-medium">propiedad</span> de
               los proyectos. Esto nos permite construir sin la presión del dinero
               y crear cosas que de otra forma no serían viables.
             </p>
@@ -395,9 +395,9 @@ const LandingPage = () => {
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight">
             Decisiones colectivas, por votación entre todos los miembros.
           </h2>
-          <p className="text-lg text-muted-foreground mb-12 max-w-3xl">
-            Las decisiones generales del Venture Studio se toman de forma
-            democrática. Estas son las que se someten a votación:
+          <p className="text-lg text-muted-foreground mb-12 max-w-4xl whitespace-pre-line">
+            Existe gobernabilidad a nivel del venture builder cooperativo y a nivel de proyectos.{"\n"}{"\n"}
+            A nivel del venture builder, todos los miembros tienen el mismo peso y poder de votación, y a nivel de proyectos el peso de las votaciones lo determina el porcentaje de la propiedad.
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
