@@ -1,13 +1,19 @@
 project_id = "nesvetfhdnyxmwxvbljs"
 
 [functions.seed-users]
-verify_jwt = false
+verify_jwt = true
 
 [functions.reset-all-passwords]
-verify_jwt = false
+verify_jwt = true
 
 [functions.reset-admin-password]
-verify_jwt = false
+verify_jwt = true
 
 [functions.resolve-login]
 verify_jwt = false
+
+[functions.admin-create-user]
+verify_jwt = true
+
+[functions.send-welcome-email]
+verify_jwt = true
