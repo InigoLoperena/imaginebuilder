@@ -2,8 +2,14 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+function requireEnv(name: string, value: string | undefined): string {
+  const normalized = value?.trim();
+  if (!normalized) throw new Error(`Missing ${name}. Configure it in .env.local or Vercel Environment Variables.`);
+  return normalized;
+}
+
+const SUPABASE_URL = requireEnv("VITE_SUPABASE_URL", import.meta.env.VITE_SUPABASE_URL);
+const SUPABASE_PUBLISHABLE_KEY = requireEnv("VITE_SUPABASE_PUBLISHABLE_KEY", import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 
 
 function isNewSupabaseApiKey(value: string): boolean {
@@ -41,5 +47,6 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    detectSessionInUrl: true,
   }
 });
